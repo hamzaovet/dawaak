@@ -19,6 +19,7 @@ import {
   User,
   LogOut,
   ShieldCheck,
+  Lock,
 } from "lucide-react";
 import AuthModal from "./AuthModal";
 
@@ -28,6 +29,8 @@ export default function Navbar() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [authOpen, setAuthOpen] = useState(false);
   const [customer, setCustomer] = useState<any>(null);
+  const [staffSession, setStaffSession] = useState<any>(null);
+  const [adminSession, setAdminSession] = useState<any>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("dawaak_theme") as "dark" | "light" | null;
@@ -42,7 +45,21 @@ export default function Navbar() {
         setCustomer(JSON.parse(savedUser));
       } catch (e) {}
     }
-  }, []);
+
+    const savedStaff = localStorage.getItem("dawaak_staff_session");
+    if (savedStaff) {
+      try {
+        setStaffSession(JSON.parse(savedStaff));
+      } catch (e) {}
+    }
+
+    const savedAdmin = localStorage.getItem("dawaak_admin_session");
+    if (savedAdmin) {
+      try {
+        setAdminSession(JSON.parse(savedAdmin));
+      } catch (e) {}
+    }
+  }, [pathname]);
 
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
@@ -60,6 +77,18 @@ export default function Navbar() {
     setCustomer(null);
   };
 
+  const handleStaffLogout = () => {
+    localStorage.removeItem("dawaak_staff_session");
+    setStaffSession(null);
+    window.location.href = "/dashboard";
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem("dawaak_admin_session");
+    setAdminSession(null);
+    window.location.href = "/admin";
+  };
+
   const NAV_LINKS = [
     { href: "/radar", label: "رادار النواقص", icon: Radar, badge: "حي" },
     { href: "/prescription", label: "فاحص الروشتات", icon: Camera, badge: "AI" },
@@ -67,6 +96,7 @@ export default function Navbar() {
     { href: "/#pharmacies", label: "دليل الصيدليات", icon: Store },
     { href: "/pricing", label: "الأسعار والباقات", icon: Sparkles, badge: "مجاناً 2026" },
     { href: "/dashboard", label: "بوابة الصيدلية", icon: LayoutDashboard },
+    { href: "/admin", label: "بوابة المالك", icon: ShieldCheck },
   ];
 
   return (
@@ -130,8 +160,55 @@ export default function Navbar() {
               })}
             </nav>
 
-            {/* Actions: User Auth, Theme Toggle & WhatsApp Hotline */}
-            <div className="hidden sm:flex items-center gap-3">
+            {/* Actions: User Auth, Staff / Admin Login, Theme Toggle & WhatsApp Hotline */}
+            <div className="hidden sm:flex items-center gap-2.5">
+              {/* Admin or Staff or Login Button */}
+              {adminSession ? (
+                <div className="flex items-center gap-1.5 bg-cyan-950/60 border border-cyan-500/40 rounded-xl px-3 py-1.5">
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-1.5 text-xs text-white font-bold hover:text-cyan-300 transition"
+                  >
+                    <ShieldCheck size={14} className="text-cyan-400" />
+                    <span>مالك المنصة</span>
+                  </Link>
+                  <button
+                    onClick={handleAdminLogout}
+                    title="تسجيل خروج المالك"
+                    className="text-slate-400 hover:text-rose-400 p-1 transition"
+                  >
+                    <LogOut size={13} />
+                  </button>
+                </div>
+              ) : staffSession ? (
+                <div className="flex items-center gap-1.5 bg-emerald-950/60 border border-emerald-500/40 rounded-xl px-3 py-1.5">
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-1.5 text-xs text-white font-bold hover:text-emerald-300 transition"
+                  >
+                    <Store size={14} className="text-emerald-400" />
+                    <span className="line-clamp-1 max-w-[120px]">
+                      {staffSession.pharmacy?.nameAr || staffSession.staff?.name}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={handleStaffLogout}
+                    title="تسجيل خروج الصيدلية"
+                    className="text-slate-400 hover:text-rose-400 p-1 transition"
+                  >
+                    <LogOut size={13} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 border border-emerald-500/40 font-black text-xs flex items-center gap-1.5 transition shadow-sm"
+                >
+                  <Lock size={13} />
+                  <span>دخول المنظومة</span>
+                </Link>
+              )}
+
               {/* Customer Account Button */}
               {customer ? (
                 <div className="flex items-center gap-1.5 bg-slate-900 border border-emerald-500/40 rounded-xl px-3 py-1.5">
@@ -153,10 +230,10 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => setAuthOpen(true)}
-                  className="px-3.5 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500 font-bold text-xs flex items-center gap-1.5 transition"
+                  className="px-3 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 font-medium text-xs flex items-center gap-1.5 transition"
                 >
-                  <User size={14} />
-                  <span>تسجيل / توثيق حساب</span>
+                  <User size={14} className="text-emerald-400" />
+                  <span>حساب المريض</span>
                 </button>
               )}
 
@@ -172,10 +249,10 @@ export default function Navbar() {
                 href="https://wa.me/201018671000?text=مرحباً%20دواك،%20أحتاج%20مساعدة%20عاجلة%20في%20توفير%20دواء"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
+                className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
               >
-                <PhoneCall size={15} />
-                <span>طوارئ النواقص 24/7</span>
+                <PhoneCall size={14} />
+                <span>طوارئ 24/7</span>
               </a>
             </div>
 
@@ -207,11 +284,51 @@ export default function Navbar() {
         {/* Mobile Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-emerald-500/20 bg-[#0a111e] p-4 space-y-2 animate-fadeIn">
+            {/* Quick Session Status */}
+            {adminSession ? (
+              <div className="p-3 bg-cyan-950/60 border border-cyan-500/30 rounded-xl flex items-center justify-between text-xs text-white mb-2">
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 font-bold"
+                >
+                  <ShieldCheck size={16} className="text-cyan-400" />
+                  <span>لوحة تحكم مالك المنصة</span>
+                </Link>
+                <button onClick={handleAdminLogout} className="text-rose-400 text-xs font-bold">
+                  خروج
+                </button>
+              </div>
+            ) : staffSession ? (
+              <div className="p-3 bg-emerald-950/60 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-white mb-2">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 font-bold"
+                >
+                  <Store size={16} className="text-emerald-400" />
+                  <span>{staffSession.pharmacy?.nameAr}</span>
+                </Link>
+                <button onClick={handleStaffLogout} className="text-rose-400 text-xs font-bold">
+                  خروج
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2.5 px-3 mb-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-black flex items-center justify-center gap-2"
+              >
+                <Lock size={14} />
+                <span>تسجيل دخول الشركاء والمالك</span>
+              </Link>
+            )}
+
             {customer && (
               <div className="p-3 bg-slate-900/90 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-white mb-2">
                 <div className="flex items-center gap-2">
                   <User size={15} className="text-emerald-400" />
-                  <span className="font-bold">{customer.name} (حساب موثّق)</span>
+                  <span className="font-bold">{customer.name} (حساب مريض موثّق)</span>
                 </div>
                 <button onClick={handleLogout} className="text-rose-400 text-xs font-bold">
                   خروج
