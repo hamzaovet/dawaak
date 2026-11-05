@@ -84,17 +84,23 @@ model Courier {
 // 4. CUSTOMER / PATIENT (العملاء والمرضى)
 // ----------------------------------------------------
 model Customer {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   phone           String
+  email           String?
   city            String?
   address         String?
   lat             Float?
   lng             Float?
   allergies       String? // الحساسية الدوائية (بنسلين، سلفا، إلخ)
   chronicDiseases String? // أمراض مزمنة (ضغط، سكر، غدة...)
-  totalOrders     Int      @default(0)
-  createdAt       DateTime @default(now())
+  otpCode         String?
+  otpExpires      DateTime?
+  isVerified      Boolean   @default(false)
+  whatsappActive  Boolean   @default(false)
+  totalOrders     Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
 
   orders           Order[]
   prescriptions    Prescription[]

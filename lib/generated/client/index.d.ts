@@ -5810,42 +5810,60 @@ export namespace Prisma {
     id: string | null
     name: string | null
     phone: string | null
+    email: string | null
     city: string | null
     address: string | null
     lat: number | null
     lng: number | null
     allergies: string | null
     chronicDiseases: string | null
+    otpCode: string | null
+    otpExpires: Date | null
+    isVerified: boolean | null
+    whatsappActive: boolean | null
     totalOrders: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type CustomerMaxAggregateOutputType = {
     id: string | null
     name: string | null
     phone: string | null
+    email: string | null
     city: string | null
     address: string | null
     lat: number | null
     lng: number | null
     allergies: string | null
     chronicDiseases: string | null
+    otpCode: string | null
+    otpExpires: Date | null
+    isVerified: boolean | null
+    whatsappActive: boolean | null
     totalOrders: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type CustomerCountAggregateOutputType = {
     id: number
     name: number
     phone: number
+    email: number
     city: number
     address: number
     lat: number
     lng: number
     allergies: number
     chronicDiseases: number
+    otpCode: number
+    otpExpires: number
+    isVerified: number
+    whatsappActive: number
     totalOrders: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -5866,42 +5884,60 @@ export namespace Prisma {
     id?: true
     name?: true
     phone?: true
+    email?: true
     city?: true
     address?: true
     lat?: true
     lng?: true
     allergies?: true
     chronicDiseases?: true
+    otpCode?: true
+    otpExpires?: true
+    isVerified?: true
+    whatsappActive?: true
     totalOrders?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type CustomerMaxAggregateInputType = {
     id?: true
     name?: true
     phone?: true
+    email?: true
     city?: true
     address?: true
     lat?: true
     lng?: true
     allergies?: true
     chronicDiseases?: true
+    otpCode?: true
+    otpExpires?: true
+    isVerified?: true
+    whatsappActive?: true
     totalOrders?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type CustomerCountAggregateInputType = {
     id?: true
     name?: true
     phone?: true
+    email?: true
     city?: true
     address?: true
     lat?: true
     lng?: true
     allergies?: true
     chronicDiseases?: true
+    otpCode?: true
+    otpExpires?: true
+    isVerified?: true
+    whatsappActive?: true
     totalOrders?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -5995,14 +6031,20 @@ export namespace Prisma {
     id: string
     name: string
     phone: string
+    email: string | null
     city: string | null
     address: string | null
     lat: number | null
     lng: number | null
     allergies: string | null
     chronicDiseases: string | null
+    otpCode: string | null
+    otpExpires: Date | null
+    isVerified: boolean
+    whatsappActive: boolean
     totalOrders: number
     createdAt: Date
+    updatedAt: Date
     _count: CustomerCountAggregateOutputType | null
     _avg: CustomerAvgAggregateOutputType | null
     _sum: CustomerSumAggregateOutputType | null
@@ -6028,14 +6070,20 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     phone?: boolean
+    email?: boolean
     city?: boolean
     address?: boolean
     lat?: boolean
     lng?: boolean
     allergies?: boolean
     chronicDiseases?: boolean
+    otpCode?: boolean
+    otpExpires?: boolean
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     prescriptions?: boolean | Customer$prescriptionsArgs<ExtArgs>
     labReports?: boolean | Customer$labReportsArgs<ExtArgs>
@@ -6047,45 +6095,63 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     phone?: boolean
+    email?: boolean
     city?: boolean
     address?: boolean
     lat?: boolean
     lng?: boolean
     allergies?: boolean
     chronicDiseases?: boolean
+    otpCode?: boolean
+    otpExpires?: boolean
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     phone?: boolean
+    email?: boolean
     city?: boolean
     address?: boolean
     lat?: boolean
     lng?: boolean
     allergies?: boolean
     chronicDiseases?: boolean
+    otpCode?: boolean
+    otpExpires?: boolean
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectScalar = {
     id?: boolean
     name?: boolean
     phone?: boolean
+    email?: boolean
     city?: boolean
     address?: boolean
     lat?: boolean
     lng?: boolean
     allergies?: boolean
     chronicDiseases?: boolean
+    otpCode?: boolean
+    otpExpires?: boolean
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "phone" | "city" | "address" | "lat" | "lng" | "allergies" | "chronicDiseases" | "totalOrders" | "createdAt", ExtArgs["result"]["customer"]>
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "phone" | "email" | "city" | "address" | "lat" | "lng" | "allergies" | "chronicDiseases" | "otpCode" | "otpExpires" | "isVerified" | "whatsappActive" | "totalOrders" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     prescriptions?: boolean | Customer$prescriptionsArgs<ExtArgs>
@@ -6108,14 +6174,20 @@ export namespace Prisma {
       id: string
       name: string
       phone: string
+      email: string | null
       city: string | null
       address: string | null
       lat: number | null
       lng: number | null
       allergies: string | null
       chronicDiseases: string | null
+      otpCode: string | null
+      otpExpires: Date | null
+      isVerified: boolean
+      whatsappActive: boolean
       totalOrders: number
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["customer"]>
     composites: {}
   }
@@ -6546,14 +6618,20 @@ export namespace Prisma {
     readonly id: FieldRef<"Customer", 'String'>
     readonly name: FieldRef<"Customer", 'String'>
     readonly phone: FieldRef<"Customer", 'String'>
+    readonly email: FieldRef<"Customer", 'String'>
     readonly city: FieldRef<"Customer", 'String'>
     readonly address: FieldRef<"Customer", 'String'>
     readonly lat: FieldRef<"Customer", 'Float'>
     readonly lng: FieldRef<"Customer", 'Float'>
     readonly allergies: FieldRef<"Customer", 'String'>
     readonly chronicDiseases: FieldRef<"Customer", 'String'>
+    readonly otpCode: FieldRef<"Customer", 'String'>
+    readonly otpExpires: FieldRef<"Customer", 'DateTime'>
+    readonly isVerified: FieldRef<"Customer", 'Boolean'>
+    readonly whatsappActive: FieldRef<"Customer", 'Boolean'>
     readonly totalOrders: FieldRef<"Customer", 'Int'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
+    readonly updatedAt: FieldRef<"Customer", 'DateTime'>
   }
     
 
@@ -14598,14 +14676,20 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     phone: 'phone',
+    email: 'email',
     city: 'city',
     address: 'address',
     lat: 'lat',
     lng: 'lng',
     allergies: 'allergies',
     chronicDiseases: 'chronicDiseases',
+    otpCode: 'otpCode',
+    otpExpires: 'otpExpires',
+    isVerified: 'isVerified',
+    whatsappActive: 'whatsappActive',
     totalOrders: 'totalOrders',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -15161,14 +15245,20 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     phone?: StringFilter<"Customer"> | string
+    email?: StringNullableFilter<"Customer"> | string | null
     city?: StringNullableFilter<"Customer"> | string | null
     address?: StringNullableFilter<"Customer"> | string | null
     lat?: FloatNullableFilter<"Customer"> | number | null
     lng?: FloatNullableFilter<"Customer"> | number | null
     allergies?: StringNullableFilter<"Customer"> | string | null
     chronicDiseases?: StringNullableFilter<"Customer"> | string | null
+    otpCode?: StringNullableFilter<"Customer"> | string | null
+    otpExpires?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    isVerified?: BoolFilter<"Customer"> | boolean
+    whatsappActive?: BoolFilter<"Customer"> | boolean
     totalOrders?: IntFilter<"Customer"> | number
     createdAt?: DateTimeFilter<"Customer"> | Date | string
+    updatedAt?: DateTimeFilter<"Customer"> | Date | string
     orders?: OrderListRelationFilter
     prescriptions?: PrescriptionListRelationFilter
     labReports?: LabReportListRelationFilter
@@ -15179,14 +15269,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     lat?: SortOrderInput | SortOrder
     lng?: SortOrderInput | SortOrder
     allergies?: SortOrderInput | SortOrder
     chronicDiseases?: SortOrderInput | SortOrder
+    otpCode?: SortOrderInput | SortOrder
+    otpExpires?: SortOrderInput | SortOrder
+    isVerified?: SortOrder
+    whatsappActive?: SortOrder
     totalOrders?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     orders?: OrderOrderByRelationAggregateInput
     prescriptions?: PrescriptionOrderByRelationAggregateInput
     labReports?: LabReportOrderByRelationAggregateInput
@@ -15200,14 +15296,20 @@ export namespace Prisma {
     NOT?: CustomerWhereInput | CustomerWhereInput[]
     name?: StringFilter<"Customer"> | string
     phone?: StringFilter<"Customer"> | string
+    email?: StringNullableFilter<"Customer"> | string | null
     city?: StringNullableFilter<"Customer"> | string | null
     address?: StringNullableFilter<"Customer"> | string | null
     lat?: FloatNullableFilter<"Customer"> | number | null
     lng?: FloatNullableFilter<"Customer"> | number | null
     allergies?: StringNullableFilter<"Customer"> | string | null
     chronicDiseases?: StringNullableFilter<"Customer"> | string | null
+    otpCode?: StringNullableFilter<"Customer"> | string | null
+    otpExpires?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    isVerified?: BoolFilter<"Customer"> | boolean
+    whatsappActive?: BoolFilter<"Customer"> | boolean
     totalOrders?: IntFilter<"Customer"> | number
     createdAt?: DateTimeFilter<"Customer"> | Date | string
+    updatedAt?: DateTimeFilter<"Customer"> | Date | string
     orders?: OrderListRelationFilter
     prescriptions?: PrescriptionListRelationFilter
     labReports?: LabReportListRelationFilter
@@ -15218,14 +15320,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     lat?: SortOrderInput | SortOrder
     lng?: SortOrderInput | SortOrder
     allergies?: SortOrderInput | SortOrder
     chronicDiseases?: SortOrderInput | SortOrder
+    otpCode?: SortOrderInput | SortOrder
+    otpExpires?: SortOrderInput | SortOrder
+    isVerified?: SortOrder
+    whatsappActive?: SortOrder
     totalOrders?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
     _avg?: CustomerAvgOrderByAggregateInput
     _max?: CustomerMaxOrderByAggregateInput
@@ -15240,14 +15348,20 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Customer"> | string
     name?: StringWithAggregatesFilter<"Customer"> | string
     phone?: StringWithAggregatesFilter<"Customer"> | string
+    email?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     city?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     address?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     lat?: FloatNullableWithAggregatesFilter<"Customer"> | number | null
     lng?: FloatNullableWithAggregatesFilter<"Customer"> | number | null
     allergies?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     chronicDiseases?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    otpCode?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    otpExpires?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    isVerified?: BoolWithAggregatesFilter<"Customer"> | boolean
+    whatsappActive?: BoolWithAggregatesFilter<"Customer"> | boolean
     totalOrders?: IntWithAggregatesFilter<"Customer"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
   }
 
   export type MedicineWhereInput = {
@@ -16259,14 +16373,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionCreateNestedManyWithoutCustomerInput
     labReports?: LabReportCreateNestedManyWithoutCustomerInput
@@ -16277,14 +16397,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
     labReports?: LabReportUncheckedCreateNestedManyWithoutCustomerInput
@@ -16295,14 +16421,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUpdateManyWithoutCustomerNestedInput
@@ -16313,14 +16445,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUncheckedUpdateManyWithoutCustomerNestedInput
@@ -16331,42 +16469,60 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type CustomerUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CustomerUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MedicineCreateInput = {
@@ -17475,6 +17631,17 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type LabReportListRelationFilter = {
     every?: LabReportWhereInput
     some?: LabReportWhereInput
@@ -17499,14 +17666,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    email?: SortOrder
     city?: SortOrder
     address?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     allergies?: SortOrder
     chronicDiseases?: SortOrder
+    otpCode?: SortOrder
+    otpExpires?: SortOrder
+    isVerified?: SortOrder
+    whatsappActive?: SortOrder
     totalOrders?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CustomerAvgOrderByAggregateInput = {
@@ -17519,34 +17692,60 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    email?: SortOrder
     city?: SortOrder
     address?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     allergies?: SortOrder
     chronicDiseases?: SortOrder
+    otpCode?: SortOrder
+    otpExpires?: SortOrder
+    isVerified?: SortOrder
+    whatsappActive?: SortOrder
     totalOrders?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CustomerMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    email?: SortOrder
     city?: SortOrder
     address?: SortOrder
     lat?: SortOrder
     lng?: SortOrder
     allergies?: SortOrder
     chronicDiseases?: SortOrder
+    otpCode?: SortOrder
+    otpExpires?: SortOrder
+    isVerified?: SortOrder
+    whatsappActive?: SortOrder
     totalOrders?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CustomerSumOrderByAggregateInput = {
     lat?: SortOrder
     lng?: SortOrder
     totalOrders?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type MedicineCountOrderByAggregateInput = {
@@ -17766,17 +17965,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type ShortageRequestCountOrderByAggregateInput = {
     id?: SortOrder
     customerId?: SortOrder
@@ -17831,20 +18019,6 @@ export namespace Prisma {
 
   export type ShortageRequestSumOrderByAggregateInput = {
     quantityNeeded?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type CourierNullableScalarRelationFilter = {
@@ -18319,6 +18493,10 @@ export namespace Prisma {
     connect?: ShortageRequestWhereUniqueInput | ShortageRequestWhereUniqueInput[]
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type OrderUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -18609,10 +18787,6 @@ export namespace Prisma {
     connectOrCreate?: OrderCreateOrConnectWithoutShortageRequestInput | OrderCreateOrConnectWithoutShortageRequestInput[]
     createMany?: OrderCreateManyShortageRequestInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type CustomerUpdateOneWithoutShortageRequestsNestedInput = {
@@ -20229,14 +20403,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutCustomerInput
     labReports?: LabReportCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestCreateNestedManyWithoutCustomerInput
@@ -20246,14 +20426,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     labReports?: LabReportUncheckedCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestUncheckedCreateNestedManyWithoutCustomerInput
@@ -20404,14 +20590,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUpdateManyWithoutCustomerNestedInput
@@ -20421,14 +20613,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUncheckedUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUncheckedUpdateManyWithoutCustomerNestedInput
@@ -20531,14 +20729,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestCreateNestedManyWithoutCustomerInput
@@ -20548,14 +20752,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestUncheckedCreateNestedManyWithoutCustomerInput
@@ -20581,14 +20791,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUpdateManyWithoutCustomerNestedInput
@@ -20598,14 +20814,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUncheckedUpdateManyWithoutCustomerNestedInput
@@ -20615,14 +20837,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionCreateNestedManyWithoutCustomerInput
     labReports?: LabReportCreateNestedManyWithoutCustomerInput
@@ -20632,14 +20860,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
     prescriptions?: PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
     labReports?: LabReportUncheckedCreateNestedManyWithoutCustomerInput
@@ -20719,14 +20953,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUpdateManyWithoutCustomerNestedInput
@@ -20736,14 +20976,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
     prescriptions?: PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUncheckedUpdateManyWithoutCustomerNestedInput
@@ -20840,14 +21086,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     prescriptions?: PrescriptionCreateNestedManyWithoutCustomerInput
     labReports?: LabReportCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestCreateNestedManyWithoutCustomerInput
@@ -20857,14 +21109,20 @@ export namespace Prisma {
     id?: string
     name: string
     phone: string
+    email?: string | null
     city?: string | null
     address?: string | null
     lat?: number | null
     lng?: number | null
     allergies?: string | null
     chronicDiseases?: string | null
+    otpCode?: string | null
+    otpExpires?: Date | string | null
+    isVerified?: boolean
+    whatsappActive?: boolean
     totalOrders?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     prescriptions?: PrescriptionUncheckedCreateNestedManyWithoutCustomerInput
     labReports?: LabReportUncheckedCreateNestedManyWithoutCustomerInput
     shortageRequests?: ShortageRequestUncheckedCreateNestedManyWithoutCustomerInput
@@ -21068,14 +21326,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     prescriptions?: PrescriptionUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUpdateManyWithoutCustomerNestedInput
@@ -21085,14 +21349,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     lat?: NullableFloatFieldUpdateOperationsInput | number | null
     lng?: NullableFloatFieldUpdateOperationsInput | number | null
     allergies?: NullableStringFieldUpdateOperationsInput | string | null
     chronicDiseases?: NullableStringFieldUpdateOperationsInput | string | null
+    otpCode?: NullableStringFieldUpdateOperationsInput | string | null
+    otpExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    whatsappActive?: BoolFieldUpdateOperationsInput | boolean
     totalOrders?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     prescriptions?: PrescriptionUncheckedUpdateManyWithoutCustomerNestedInput
     labReports?: LabReportUncheckedUpdateManyWithoutCustomerNestedInput
     shortageRequests?: ShortageRequestUncheckedUpdateManyWithoutCustomerNestedInput

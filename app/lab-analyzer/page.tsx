@@ -48,7 +48,7 @@ export default function LabAnalyzerPage() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Sample Lab Trigger (CBC with Mild Anemia)
+  // Sample Lab Trigger (Realistic CBC Normal Report)
   const handleLoadSample = () => {
     setImagePreview("https://images.unsplash.com/photo-1579154204601-01588f351e67?w=600");
     setLoading(true);
@@ -56,77 +56,91 @@ export default function LabAnalyzerPage() {
 
     setTimeout(() => {
       setResults({
-        testType: "صورة دم كاملة (CBC - Complete Blood Count)",
+        testType: "صورة دم كاملة (Complete Blood Count - CBC)",
         patientSummaryAr:
-          "تحليلك يوضح حالة صحية عامة مستقرة وجيدة جداً، مع وجود مؤشر على أنيميا نقص حديد بسيطة وخفيفة (انخفاض طفيف في الهيموجلوبين وكرات الدم الحمراء)، بينما كرات الدم البيضاء والصفائح الدموية في معدلاتها الطبيعية الممتازة مما يؤكد عدم وجود أي التهابات نشطة.",
+          "نتائج فحص صورة الدم الكاملة تقع بالكامل ضمن المعدلات المرجعية الطبيعية المثالية (Peripheral hemogram within normal). كرات الدم الحمراء والهيموجلوبين في حالة ممتازة وخالية تماماً من أي أنيميا، كما أن الجهاز المناعي والصفائح الدموية متزنة وسليمة بنسبة 100%.",
         tests: [
           {
             parameter: "Hemoglobin (HGB)",
             parameterAr: "الهيموجلوبين (بروتين حمل الأكسجين)",
-            value: "10.8",
-            referenceRange: "12.0 - 16.0",
+            value: "15.6",
+            referenceRange: "13.0 - 17.0",
             unit: "g/dL",
-            status: "LOW",
-          },
-          {
-            parameter: "Red Blood Cells (RBC)",
-            parameterAr: "كرات الدم الحمراء",
-            value: "3.7",
-            referenceRange: "4.0 - 5.5",
-            unit: "10^6/uL",
-            status: "LOW",
+            status: "NORMAL",
           },
           {
             parameter: "White Blood Cells (WBC)",
             parameterAr: "كرات الدم البيضاء (الجهاز المناعي)",
-            value: "6.8",
-            referenceRange: "4.0 - 11.0",
+            value: "7.1",
+            referenceRange: "4.0 - 10.0",
             unit: "10^3/uL",
+            status: "NORMAL",
+          },
+          {
+            parameter: "Red Blood Cells (RBC)",
+            parameterAr: "كرات الدم الحمراء",
+            value: "5.08",
+            referenceRange: "4.50 - 5.50",
+            unit: "10^6/uL",
             status: "NORMAL",
           },
           {
             parameter: "Platelets (PLT)",
             parameterAr: "الصفائح الدموية (تخثر الدم)",
-            value: "265",
-            referenceRange: "150 - 450",
+            value: "228",
+            referenceRange: "150 - 410",
             unit: "10^3/uL",
             status: "NORMAL",
           },
           {
             parameter: "Hematocrit (HCT)",
             parameterAr: "نسبة حجم الخلايا المكدسة",
-            value: "33.2",
-            referenceRange: "36.0 - 48.0",
+            value: "48.2",
+            referenceRange: "40.0 - 50.0",
             unit: "%",
-            status: "LOW",
+            status: "NORMAL",
           },
           {
             parameter: "Mean Corpuscular Volume (MCV)",
             parameterAr: "متوسط حجم كرات الدم الحمراء",
-            value: "74.5",
-            referenceRange: "80.0 - 100.0",
+            value: "95.0",
+            referenceRange: "80.0 - 101.0",
             unit: "fL",
-            status: "LOW",
+            status: "NORMAL",
+          },
+          {
+            parameter: "Mean Corpuscular Hemoglobin (MCH)",
+            parameterAr: "متوسط هيموجلوبين الكرية",
+            value: "30.7",
+            referenceRange: "27.0 - 32.0",
+            unit: "pg",
+            status: "NORMAL",
+          },
+          {
+            parameter: "MCHC",
+            parameterAr: "تركيز هيموجلوبين الكرية",
+            value: "32.4",
+            referenceRange: "31.5 - 34.5",
+            unit: "%",
+            status: "NORMAL",
           },
         ],
         keyFindings: [
-          "وجود أنيميا ميكروسيتيك بسيطة (Microcytic Hypochromic) تشير لنقص مخزون الحديد في الجسم.",
-          "المناعة سليمة تماماً: كرات الدم البيضاء طبيعية ولا يوجد اشتباه في أي عدوى بكتيرية أو فيروسية.",
-          "تخثر الدم والصفائح الدموية في أفضل حالاتها الطبيعية.",
+          "مؤشرات الدم سليمة تماماً ولا يوجد أي اشتباه في فقر دم أو أنيميا.",
+          "المناعة وكرات الدم البيضاء تعمل بكفاءة تامة وطبيعية.",
+          "تخثر الدم والصفائح الدموية متزنة تماماً وضمن النطاق الطبيعي.",
         ],
         doctorAdviceQuestions: [
-          "هل يحتاج فحص إضافي لقياس مخزون الحديد في الدم (Serum Ferritin)؟",
-          "ما هي الجرعة الأنسب لمكملات الحديد (مثل الفيروجلوبين أو الهيموجيت) بدون إحداث اضطرابات في المعدة؟",
-          "هل أحتاج لإعادة تحليل صورة الدم بعد شهرين من بدء كورس العلاج؟",
+          "هل يحتاج المريض لفحوصات دورية سنوية فقط للاطمئنان؟",
+          "هل يحتاج أي فيتامينات وقائية للحفاظ على هذا التوازن الممتاز؟",
         ],
         suggestedLifestyleAndVitamins: [
-          "الإكثار من الأطعمة الغنية بالحديد الحيواني سريع الامتصاص (الكبدة البقري، اللحوم الحمراء)، والنباتي (السبانخ، العسل الأسود، العدس).",
-          "شرب عصير ليمون أو برتقال طازج مع الوجبات لاحتوائه على فيتامين C الذي يضاعف امتصاص الحديد في الأمعاء.",
-          "تجنب تناول الشاي والقهوة والمشروبات الغازية مباشرة بعد الوجبات وتأجيلها ساعتين على الأقل لأن مادة التانين تمنع امتصاص الحديد.",
+          "الاستمرار في تناول الأغذية الصحية المتوازنة وشرب كميات كافية من الماء يومياً.",
+          "ممارسة النشاط الرياضي الدوري لدعم الدورة الدموية وصحة القلب.",
         ],
       });
       setLoading(false);
-    }, 1400);
+    }, 1200);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

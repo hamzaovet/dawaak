@@ -1,14 +1,21 @@
 /**
- * Dawaak AI Engine powered by Google Gemini Multimodal
+ * Dawaak AI Engine powered by Google Gemini Vision (Multimodal)
  * Handles:
  * 1. Egyptian Doctor Prescription Handwriting Deciphering
- * 2. Medical Lab Tests & Report Clinical Interpretation
+ * 2. Medical Lab Tests & Report Clinical Interpretation (CBC, Liver, Kidney, Lipid, HbA1c)
  */
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const GEMINI_MODEL = "gemini-2.0-flash";
 
-interface PrescriptionItem {
+// Active candidate models with automatic cascade failover
+const GEMINI_MODELS = [
+  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-flash-latest",
+  "gemini-3-flash-preview",
+];
+
+export interface PrescriptionItem {
   tradeName: string;
   genericName?: string;
   dosage: string;
@@ -45,6 +52,69 @@ export interface LabAnalysisResult {
   suggestedLifestyleAndVitamins: string[];
 }
 
+/**
+ * Universal Gemini Multimodal Runner with Model Cascade
+ */
+async function callGeminiMultimodal(
+  prompt: string,
+  cleanBase64: string,
+  mimeType: string = "image/jpeg"
+): Promise<string> {
+  let lastError: any = null;
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: prompt },
+                  {
+                    inline_data: {
+                      mime_type: mimeType,
+                      data: cleanBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 2500,
+            },
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.warn(`[Gemini ${model}] status ${res.status}:`, errText.substring(0, 120));
+        lastError = new Error(`Gemini model ${model} returned status ${res.status}`);
+        continue;
+      }
+
+      const data = await res.json();
+      const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (candidateText) {
+        return candidateText.replace(/```json/g, "").replace(/```/g, "").trim();
+      }
+    } catch (err: any) {
+      console.warn(`[Gemini ${model}] exception:`, err.message);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error("فشل الاتصال بجميع نماذج الذكاء الاصطناعي المتاحة");
+}
+
+/**
+ * 1. AI Doctor Prescription Handwriting Scanner
+ */
 export async function analyzePrescription(
   imageBase64: string,
   mimeType: string = "image/jpeg"
@@ -59,14 +129,14 @@ export async function analyzePrescription(
 
 أرجع النتيجة بصيغة JSON فقط بدون أي علامات ماركداون إضافية أو نصوص خارج الـ JSON:
 {
-  "doctorSpecialty": "تخصص الطبيب (مثلاً: باطنة وجهاز هضمي / عظام ومفاصل / أطفال)",
-  "diagnosisNotes": "ملاحظات التشخيص إن وجدت",
+  "doctorSpecialty": "تخصص الطبيب (مثلاً: باطنة، أطفال، عظام، جلدية)",
+  "diagnosisNotes": "أي تشخيص مكتوب أو ملاحظات طبية من الطبيب",
   "medicines": [
     {
-      "tradeName": "الاسم التجاري للدواء كما هو شائع في مصر (مثلاً: Augmentin 1g, Panadol Extra, Concor 5)",
-      "genericName": "المادة الفعالة",
-      "dosage": "التركيز والجرعة",
-      "frequency": "عدد المرات (مثلاً: قرص كل 12 ساعة)",
+      "tradeName": "الاسم التجاري الدقيق بالإنجليزية والعربية",
+      "genericName": "المادة الفعالة العلمية",
+      "dosage": "التركيز (مثلاً: 1g, 500mg, 10mg)",
+      "frequency": "الجرعة اليومية (مثلاً: قرص بعد الإفطار والعشاء)",
       "instructionsAr": "تعليمات الاستخدام (مثلاً: يؤخذ بعد الأكل بساعة مع كوب ماء وفير)",
       "confidence": 0.95,
       "isLikelyShortage": false,
@@ -78,77 +148,13 @@ export async function analyzePrescription(
 }
 `;
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: cleanBase64,
-                  },
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 2048,
-          },
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("Gemini API Prescription Error:", errText);
-      throw new Error(`Gemini API Error: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-    const cleanJson = candidate.replace(/```json/g, "").replace(/```/g, "").trim();
-    return JSON.parse(cleanJson);
-  } catch (error: any) {
-    console.error("Failed to parse prescription with Gemini:", error);
-    // Fallback response
-    return {
-      doctorSpecialty: "طب عام / غير محدد",
-      medicines: [
-        {
-          tradeName: "أوجمنتين 1 جم (Augmentin 1g)",
-          genericName: "Amoxicillin + Clavulanic Acid",
-          dosage: "1000 mg",
-          frequency: "قرص كل 12 ساعة بعد الأكل",
-          instructionsAr: "يؤخذ بعد الطعام مباشرة مع كوب ماء كبير",
-          confidence: 0.9,
-          isLikelyShortage: false,
-          suggestedAlternatives: ["كلافيموكس 1 جم", "هاي بيوتك 1 جم", "إيموكسكلاف 1 جم"],
-        },
-        {
-          tradeName: "بانادول إكسترا (Panadol Extra)",
-          genericName: "Paracetamol + Caffeine",
-          dosage: "500 mg",
-          frequency: "قرص عند اللزوم",
-          instructionsAr: "مسكن للألم وخافض للحرارة",
-          confidence: 0.95,
-          isLikelyShortage: false,
-          suggestedAlternatives: ["سيتال إكسترا", "بارامول إكسترا"],
-        },
-      ],
-      unclearItems: [],
-      pharmacistAdvice: "يرجى مراجعة الصيدلي قبل تناول أي بديل دوائي والالتزام بالجرعات المحددة.",
-    };
-  }
+  const jsonStr = await callGeminiMultimodal(prompt, cleanBase64, mimeType);
+  return JSON.parse(jsonStr);
 }
 
+/**
+ * 2. Medical Lab Test Clinical Interpretation Engine (Rigorous & Exact)
+ */
 export async function interpretLabReport(
   imageBase64: string,
   mimeType: string = "image/jpeg"
@@ -156,122 +162,46 @@ export async function interpretLabReport(
   const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
   const prompt = `
-أنت استشاري تحاليل طبية وطب باطني.
-المهمة:
-اقرأ صورة تقرير التحليل الطبي المرفق (CBC, Liver Enzymes, Kidney Function, Lipid Profile, Diabetes HbA1c, Urine, etc).
-حلل كل باراميتر وقارنه بالنسب المرجعية (Reference Range).
-اشرح للمريض بلغة عربية فصحى مبسطة ومهدئة ومحترمة (توضح بدون فزع أو تهويل).
+أنت استشاري تحاليل طبية باثولوجية سريرية وطب باطني دقيق جداً (Senior Clinical Pathologist).
+مهمتك فحص صورة تقرير التحليل الطبي واستخراج النتائج الحقيقية المطبوعة في الورقة بدقة 100% بدون أي تخمين أو افتراض أو عشوائية.
+
+تعليمات صارمة لا تقبل الخطأ:
+1. اقرأ كل سطر وفحص مخبري موجود في الصورة بدقة متناهية (مثل WBC, RBC, HGB, HCT, MCV, MCH, MCHC, RDW, PLT, وغيرها).
+2. استخرج القيمة الحقيقية المكتوبة بالضبط (Result) وقارنها بالنطاق المرجعي المكتوب في الورقة نفسها (Ref. Range).
+3. حدد الحالة السريرية بدقة:
+   - إذا كانت القيمة داخل النطاق المرجعي المكتوب في الورقة، فالحالة هي "NORMAL" وتصنيفها طبيعي.
+   - إذا كانت أقل من الحد الأدنى للمرجع، فالحالة "LOW" (أقل من الطبيعي).
+   - إذا كانت أعلى من الحد الأقصى للمرجع، فالحالة "HIGH" (أعلى من الطبيعي).
+4. اقرأ التعليقات المكتوبة أسفل التقرير (مثل "peripheral hemogram appear within normal" أو غيرها) واعتمدها كأساس لملخص الحالة.
+5. إذا كانت كافة مؤشرات صورة الدم طبيعية (مثل HGB 15.6, WBC 7.1, PLT 228)، اشرح للمريض بوضوح تام أن دمه سليم وخالٍ من أي أنيميا وأن مناعته وتجلط الدم لديه ممتاز وفي الحدود الطبيعية المثالية، ولا تدّعِ وجود أي أنيميا إطلاقاً!
+6. التزم بالصدق العلمي التام، ولا تبتكر أرقاماً غير موجودة في الصورة.
 
 أرجع النتيجة بصيغة JSON فقط بدون ماركداون:
 {
-  "testType": "اسم التحليل (مثلاً: صورة دم كاملة CBC / وظائف كبد / دهون ثلاثية وكوليسترول)",
-  "patientSummaryAr": "شرح عام لحالة المريض بلغة بسيطة ومطمئنة",
+  "testType": "اسم التحليل (مثلاً: Complete Blood Count - CBC)",
+  "patientSummaryAr": "شرح دقيق وصادق ومطمئن لحالة المريض بناء على الأرقام الحقيقية المطبوعة",
   "tests": [
     {
-      "parameter": "Hemoglobin (HGB)",
-      "parameterAr": "الهيموجلوبين (نسبة كرات الدم الحمراء)",
-      "value": "11.2",
+      "parameter": "HGB",
+      "parameterAr": "الهيموجلوبين",
+      "value": "15.6",
       "referenceRange": "13.0 - 17.0",
       "unit": "g/dL",
-      "status": "LOW"
+      "status": "NORMAL"
     }
   ],
   "keyFindings": [
-    "وجود أنيميا بسيطة ناتجة عن انخفاض الهيموجلوبين",
-    "وظائف الكلى والكبد في الحدود الطبيعية الممتازة"
+    "النقاط الجوهرية الدقيقة المستخلصة من التحليل الفعلي"
   ],
   "doctorAdviceQuestions": [
-    "هل أحتاج لمكملات حديد وفيتامين ب12؟",
-    "متى أقوم بإعادة التحليل للاطمئنان على النسبة؟"
+    "أسئلة موجهة يسألها المريض لطبيبه بناء على نتائجه الحقيقية"
   ],
   "suggestedLifestyleAndVitamins": [
-    "التركيز على الأطعمة الغنية بالحديد (السبانخ، الكبدة، العسل الأسود، الرمان)",
-    "فيتامين C مع الوجبات لزيادة امتصاص الحديد"
+    "إرشادات نمط حياة وغذاء ملائمة للحالة"
   ]
 }
 `;
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: cleanBase64,
-                  },
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 2048,
-          },
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error(`Gemini API Error: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-    const cleanJson = candidate.replace(/```json/g, "").replace(/```/g, "").trim();
-    return JSON.parse(cleanJson);
-  } catch (error) {
-    console.error("Failed to interpret lab report with Gemini:", error);
-    // Fallback response
-    return {
-      testType: "صورة دم كاملة (CBC)",
-      patientSummaryAr: "التحليل يوضح حالة صحية عامة مستقرة مع وجود مؤشرات طفيفة لأنيميا نقص الحديد التي يمكن تحسينها بالغذاء المناسب والمكملات.",
-      tests: [
-        {
-          parameter: "Hemoglobin (HGB)",
-          parameterAr: "الهيموجلوبين",
-          value: "10.8",
-          referenceRange: "12.0 - 15.5",
-          unit: "g/dL",
-          status: "LOW",
-        },
-        {
-          parameter: "White Blood Cells (WBC)",
-          parameterAr: "كرات الدم البيضاء (المناعة)",
-          value: "6,500",
-          referenceRange: "4,000 - 11,000",
-          unit: "/mcL",
-          status: "NORMAL",
-        },
-        {
-          parameter: "Platelets (PLT)",
-          parameterAr: "الصفائح الدموية (التجلط)",
-          value: "260,000",
-          referenceRange: "150,000 - 450,000",
-          unit: "/mcL",
-          status: "NORMAL",
-        },
-      ],
-      keyFindings: [
-        "كرات الدم البيضاء ومناعة الجسم في المعدل الطبيعي الممتاز.",
-        "الصفائح الدموية وتجلط الدم سليم 100%.",
-        "الهيموجلوبين أقل قليلاً من المعدل الطبيعي.",
-      ],
-      doctorAdviceQuestions: [
-        "هل يحتاج المريض لمكملات حديد مع حمض الفوليك؟",
-        "هل يوجد فحص مخزون حديد (Ferritin) مقترح؟",
-      ],
-      suggestedLifestyleAndVitamins: [
-        "تناول الأغذية الغنية بالحديد وفيتامين سي.",
-        "شرب كميات كافية من الماء يومياً وتجنب شرب الشاي مباشرة بعد الطعام.",
-      ],
-    };
-  }
+  const jsonStr = await callGeminiMultimodal(prompt, cleanBase64, mimeType);
+  return JSON.parse(jsonStr);
 }
