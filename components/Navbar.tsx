@@ -65,6 +65,7 @@ export default function Navbar() {
     { href: "/prescription", label: "فاحص الروشتات", icon: Camera, badge: "AI" },
     { href: "/lab-analyzer", label: "مفسر التحاليل", icon: FlaskConical, badge: "ذكاء طبي" },
     { href: "/#pharmacies", label: "دليل الصيدليات", icon: Store },
+    { href: "/pricing", label: "الأسعار والباقات", icon: Sparkles, badge: "مجاناً 2026" },
     { href: "/dashboard", label: "بوابة الصيدلية", icon: LayoutDashboard },
   ];
 

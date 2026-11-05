@@ -58,17 +58,24 @@ export default function Footer() {
             <h4 className="font-bold text-white text-sm">للصيدليات والشركاء</h4>
             <ul className="space-y-1.5 text-slate-300">
               <li>
+                <Link href="/pricing" className="hover:text-emerald-400 transition text-emerald-400 font-bold">
+                  💎 باقات الأسعار (مجاناً حتى نهاية 2026)
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard" className="hover:text-emerald-400 transition">
-                  🛵 بوابة دخول الصيدلية وإدارة الطيارين
+                  🛵 بوابة الصيدلية وإدارة الطيارين
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="hover:text-emerald-400 transition text-slate-400">
+                  🛡️ بوابة المالك العام (Super Admin)
                 </Link>
               </li>
               <li>
                 <a href="https://wa.me/201018671000?text=أريد%20تسجيل%20صيدليتي%20في%20منظومة%20دواك" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition">
                   ➕ انضمام صيدلية جديدة للشبكة (0% عمولة)
                 </a>
-              </li>
-              <li>
-                <span className="text-slate-500">🔗 ربط برامج الديسك توب (الفارابي / فارما ون)</span>
               </li>
             </ul>
           </div>

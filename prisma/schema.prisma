@@ -34,7 +34,15 @@ model Pharmacy {
   deliveryTimeEstimate String   @default("25 - 40 دقيقة")
   workingHours         String   @default("24 ساعة / خدمة ليلية")
   isVerified           Boolean  @default(true)
-  subscriptionPlan     String   @default("PRO") // FREE, PRO, ENTERPRISE
+  subscriptionPlan     String   @default("PRO") // FREE, PRO, ENTERPRISE, FOUNDER_FREE_2026
+  chainName            String?  // اسم السلسلة إن وجدت (مثلاً: سلسلة صيدليات د. سمير)
+  branchName           String?  // اسم الفرع (مثلاً: فرع سكة الوايلي - حدائق القبة)
+  subscriptionStart    DateTime @default(now())
+  subscriptionEnd      DateTime?
+  subscriptionStatus   String   @default("ACTIVE") // ACTIVE, TRIAL, EXPIRED
+  monthlyFee           Float    @default(499.0)
+  branchesCount        Int      @default(1)
+  isFounderPromo       Boolean  @default(true) // اشتراك مجاني حتى نهاية 2026
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
@@ -239,4 +247,17 @@ model Order {
   notes              String?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
+}
+
+// ----------------------------------------------------
+// 11. PLATFORM OWNER / ADMIN (مالك المنصة والإدارة العليا)
+// ----------------------------------------------------
+model PlatformAdmin {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      String   @default("OWNER") // OWNER, SUPER_ADMIN
+  createdAt DateTime @default(now())
 }

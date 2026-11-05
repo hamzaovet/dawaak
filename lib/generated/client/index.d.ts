@@ -63,6 +63,11 @@ export type ShortageRequest = $Result.DefaultSelection<Prisma.$ShortageRequestPa
  * 
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
+/**
+ * Model PlatformAdmin
+ * 
+ */
+export type PlatformAdmin = $Result.DefaultSelection<Prisma.$PlatformAdminPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -284,6 +289,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.platformAdmin`: Exposes CRUD operations for the **PlatformAdmin** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlatformAdmins
+    * const platformAdmins = await prisma.platformAdmin.findMany()
+    * ```
+    */
+  get platformAdmin(): Prisma.PlatformAdminDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -740,7 +755,8 @@ export namespace Prisma {
     Prescription: 'Prescription',
     LabReport: 'LabReport',
     ShortageRequest: 'ShortageRequest',
-    Order: 'Order'
+    Order: 'Order',
+    PlatformAdmin: 'PlatformAdmin'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -756,7 +772,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "pharmacy" | "pharmacyStaff" | "courier" | "customer" | "medicine" | "pharmacyInventory" | "prescription" | "labReport" | "shortageRequest" | "order"
+      modelProps: "pharmacy" | "pharmacyStaff" | "courier" | "customer" | "medicine" | "pharmacyInventory" | "prescription" | "labReport" | "shortageRequest" | "order" | "platformAdmin"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1500,6 +1516,80 @@ export namespace Prisma {
           }
         }
       }
+      PlatformAdmin: {
+        payload: Prisma.$PlatformAdminPayload<ExtArgs>
+        fields: Prisma.PlatformAdminFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlatformAdminFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlatformAdminFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          findFirst: {
+            args: Prisma.PlatformAdminFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlatformAdminFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          findMany: {
+            args: Prisma.PlatformAdminFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>[]
+          }
+          create: {
+            args: Prisma.PlatformAdminCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          createMany: {
+            args: Prisma.PlatformAdminCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlatformAdminCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>[]
+          }
+          delete: {
+            args: Prisma.PlatformAdminDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          update: {
+            args: Prisma.PlatformAdminUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlatformAdminDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlatformAdminUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlatformAdminUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlatformAdminUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlatformAdminPayload>
+          }
+          aggregate: {
+            args: Prisma.PlatformAdminAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlatformAdmin>
+          }
+          groupBy: {
+            args: Prisma.PlatformAdminGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlatformAdminGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlatformAdminCountArgs<ExtArgs>
+            result: $Utils.Optional<PlatformAdminCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1633,6 +1723,7 @@ export namespace Prisma {
     labReport?: LabReportOmit
     shortageRequest?: ShortageRequestOmit
     order?: OrderOmit
+    platformAdmin?: PlatformAdminOmit
   }
 
   /* Types for Logging */
@@ -1978,6 +2069,8 @@ export namespace Prisma {
     lng: number | null
     rating: number | null
     deliveryFee: number | null
+    monthlyFee: number | null
+    branchesCount: number | null
   }
 
   export type PharmacySumAggregateOutputType = {
@@ -1985,6 +2078,8 @@ export namespace Prisma {
     lng: number | null
     rating: number | null
     deliveryFee: number | null
+    monthlyFee: number | null
+    branchesCount: number | null
   }
 
   export type PharmacyMinAggregateOutputType = {
@@ -2012,6 +2107,14 @@ export namespace Prisma {
     workingHours: string | null
     isVerified: boolean | null
     subscriptionPlan: string | null
+    chainName: string | null
+    branchName: string | null
+    subscriptionStart: Date | null
+    subscriptionEnd: Date | null
+    subscriptionStatus: string | null
+    monthlyFee: number | null
+    branchesCount: number | null
+    isFounderPromo: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2041,6 +2144,14 @@ export namespace Prisma {
     workingHours: string | null
     isVerified: boolean | null
     subscriptionPlan: string | null
+    chainName: string | null
+    branchName: string | null
+    subscriptionStart: Date | null
+    subscriptionEnd: Date | null
+    subscriptionStatus: string | null
+    monthlyFee: number | null
+    branchesCount: number | null
+    isFounderPromo: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2070,6 +2181,14 @@ export namespace Prisma {
     workingHours: number
     isVerified: number
     subscriptionPlan: number
+    chainName: number
+    branchName: number
+    subscriptionStart: number
+    subscriptionEnd: number
+    subscriptionStatus: number
+    monthlyFee: number
+    branchesCount: number
+    isFounderPromo: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2081,6 +2200,8 @@ export namespace Prisma {
     lng?: true
     rating?: true
     deliveryFee?: true
+    monthlyFee?: true
+    branchesCount?: true
   }
 
   export type PharmacySumAggregateInputType = {
@@ -2088,6 +2209,8 @@ export namespace Prisma {
     lng?: true
     rating?: true
     deliveryFee?: true
+    monthlyFee?: true
+    branchesCount?: true
   }
 
   export type PharmacyMinAggregateInputType = {
@@ -2115,6 +2238,14 @@ export namespace Prisma {
     workingHours?: true
     isVerified?: true
     subscriptionPlan?: true
+    chainName?: true
+    branchName?: true
+    subscriptionStart?: true
+    subscriptionEnd?: true
+    subscriptionStatus?: true
+    monthlyFee?: true
+    branchesCount?: true
+    isFounderPromo?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2144,6 +2275,14 @@ export namespace Prisma {
     workingHours?: true
     isVerified?: true
     subscriptionPlan?: true
+    chainName?: true
+    branchName?: true
+    subscriptionStart?: true
+    subscriptionEnd?: true
+    subscriptionStatus?: true
+    monthlyFee?: true
+    branchesCount?: true
+    isFounderPromo?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2173,6 +2312,14 @@ export namespace Prisma {
     workingHours?: true
     isVerified?: true
     subscriptionPlan?: true
+    chainName?: true
+    branchName?: true
+    subscriptionStart?: true
+    subscriptionEnd?: true
+    subscriptionStatus?: true
+    monthlyFee?: true
+    branchesCount?: true
+    isFounderPromo?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2289,6 +2436,14 @@ export namespace Prisma {
     workingHours: string
     isVerified: boolean
     subscriptionPlan: string
+    chainName: string | null
+    branchName: string | null
+    subscriptionStart: Date
+    subscriptionEnd: Date | null
+    subscriptionStatus: string
+    monthlyFee: number
+    branchesCount: number
+    isFounderPromo: boolean
     createdAt: Date
     updatedAt: Date
     _count: PharmacyCountAggregateOutputType | null
@@ -2337,6 +2492,14 @@ export namespace Prisma {
     workingHours?: boolean
     isVerified?: boolean
     subscriptionPlan?: boolean
+    chainName?: boolean
+    branchName?: boolean
+    subscriptionStart?: boolean
+    subscriptionEnd?: boolean
+    subscriptionStatus?: boolean
+    monthlyFee?: boolean
+    branchesCount?: boolean
+    isFounderPromo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     staff?: boolean | Pharmacy$staffArgs<ExtArgs>
@@ -2372,6 +2535,14 @@ export namespace Prisma {
     workingHours?: boolean
     isVerified?: boolean
     subscriptionPlan?: boolean
+    chainName?: boolean
+    branchName?: boolean
+    subscriptionStart?: boolean
+    subscriptionEnd?: boolean
+    subscriptionStatus?: boolean
+    monthlyFee?: boolean
+    branchesCount?: boolean
+    isFounderPromo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["pharmacy"]>
@@ -2401,6 +2572,14 @@ export namespace Prisma {
     workingHours?: boolean
     isVerified?: boolean
     subscriptionPlan?: boolean
+    chainName?: boolean
+    branchName?: boolean
+    subscriptionStart?: boolean
+    subscriptionEnd?: boolean
+    subscriptionStatus?: boolean
+    monthlyFee?: boolean
+    branchesCount?: boolean
+    isFounderPromo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["pharmacy"]>
@@ -2430,11 +2609,19 @@ export namespace Prisma {
     workingHours?: boolean
     isVerified?: boolean
     subscriptionPlan?: boolean
+    chainName?: boolean
+    branchName?: boolean
+    subscriptionStart?: boolean
+    subscriptionEnd?: boolean
+    subscriptionStatus?: boolean
+    monthlyFee?: boolean
+    branchesCount?: boolean
+    isFounderPromo?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PharmacyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "nameAr" | "nameEn" | "licenseNumber" | "ownerName" | "phone" | "whatsapp" | "email" | "address" | "city" | "governorate" | "lat" | "lng" | "logoUrl" | "coverUrl" | "rating" | "isOpen" | "deliveryAvailable" | "deliveryFee" | "deliveryTimeEstimate" | "workingHours" | "isVerified" | "subscriptionPlan" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacy"]>
+  export type PharmacyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "nameAr" | "nameEn" | "licenseNumber" | "ownerName" | "phone" | "whatsapp" | "email" | "address" | "city" | "governorate" | "lat" | "lng" | "logoUrl" | "coverUrl" | "rating" | "isOpen" | "deliveryAvailable" | "deliveryFee" | "deliveryTimeEstimate" | "workingHours" | "isVerified" | "subscriptionPlan" | "chainName" | "branchName" | "subscriptionStart" | "subscriptionEnd" | "subscriptionStatus" | "monthlyFee" | "branchesCount" | "isFounderPromo" | "createdAt" | "updatedAt", ExtArgs["result"]["pharmacy"]>
   export type PharmacyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     staff?: boolean | Pharmacy$staffArgs<ExtArgs>
     inventory?: boolean | Pharmacy$inventoryArgs<ExtArgs>
@@ -2480,6 +2667,14 @@ export namespace Prisma {
       workingHours: string
       isVerified: boolean
       subscriptionPlan: string
+      chainName: string | null
+      branchName: string | null
+      subscriptionStart: Date
+      subscriptionEnd: Date | null
+      subscriptionStatus: string
+      monthlyFee: number
+      branchesCount: number
+      isFounderPromo: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["pharmacy"]>
@@ -2934,6 +3129,14 @@ export namespace Prisma {
     readonly workingHours: FieldRef<"Pharmacy", 'String'>
     readonly isVerified: FieldRef<"Pharmacy", 'Boolean'>
     readonly subscriptionPlan: FieldRef<"Pharmacy", 'String'>
+    readonly chainName: FieldRef<"Pharmacy", 'String'>
+    readonly branchName: FieldRef<"Pharmacy", 'String'>
+    readonly subscriptionStart: FieldRef<"Pharmacy", 'DateTime'>
+    readonly subscriptionEnd: FieldRef<"Pharmacy", 'DateTime'>
+    readonly subscriptionStatus: FieldRef<"Pharmacy", 'String'>
+    readonly monthlyFee: FieldRef<"Pharmacy", 'Float'>
+    readonly branchesCount: FieldRef<"Pharmacy", 'Int'>
+    readonly isFounderPromo: FieldRef<"Pharmacy", 'Boolean'>
     readonly createdAt: FieldRef<"Pharmacy", 'DateTime'>
     readonly updatedAt: FieldRef<"Pharmacy", 'DateTime'>
   }
@@ -14596,6 +14799,1032 @@ export namespace Prisma {
 
 
   /**
+   * Model PlatformAdmin
+   */
+
+  export type AggregatePlatformAdmin = {
+    _count: PlatformAdminCountAggregateOutputType | null
+    _min: PlatformAdminMinAggregateOutputType | null
+    _max: PlatformAdminMaxAggregateOutputType | null
+  }
+
+  export type PlatformAdminMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    email: string | null
+    username: string | null
+    password: string | null
+    role: string | null
+    createdAt: Date | null
+  }
+
+  export type PlatformAdminMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    email: string | null
+    username: string | null
+    password: string | null
+    role: string | null
+    createdAt: Date | null
+  }
+
+  export type PlatformAdminCountAggregateOutputType = {
+    id: number
+    name: number
+    email: number
+    username: number
+    password: number
+    role: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PlatformAdminMinAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    username?: true
+    password?: true
+    role?: true
+    createdAt?: true
+  }
+
+  export type PlatformAdminMaxAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    username?: true
+    password?: true
+    role?: true
+    createdAt?: true
+  }
+
+  export type PlatformAdminCountAggregateInputType = {
+    id?: true
+    name?: true
+    email?: true
+    username?: true
+    password?: true
+    role?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PlatformAdminAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformAdmin to aggregate.
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformAdmins to fetch.
+     */
+    orderBy?: PlatformAdminOrderByWithRelationInput | PlatformAdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlatformAdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformAdmins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformAdmins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlatformAdmins
+    **/
+    _count?: true | PlatformAdminCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlatformAdminMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlatformAdminMaxAggregateInputType
+  }
+
+  export type GetPlatformAdminAggregateType<T extends PlatformAdminAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlatformAdmin]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlatformAdmin[P]>
+      : GetScalarType<T[P], AggregatePlatformAdmin[P]>
+  }
+
+
+
+
+  export type PlatformAdminGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlatformAdminWhereInput
+    orderBy?: PlatformAdminOrderByWithAggregationInput | PlatformAdminOrderByWithAggregationInput[]
+    by: PlatformAdminScalarFieldEnum[] | PlatformAdminScalarFieldEnum
+    having?: PlatformAdminScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlatformAdminCountAggregateInputType | true
+    _min?: PlatformAdminMinAggregateInputType
+    _max?: PlatformAdminMaxAggregateInputType
+  }
+
+  export type PlatformAdminGroupByOutputType = {
+    id: string
+    name: string
+    email: string
+    username: string
+    password: string
+    role: string
+    createdAt: Date
+    _count: PlatformAdminCountAggregateOutputType | null
+    _min: PlatformAdminMinAggregateOutputType | null
+    _max: PlatformAdminMaxAggregateOutputType | null
+  }
+
+  type GetPlatformAdminGroupByPayload<T extends PlatformAdminGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlatformAdminGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlatformAdminGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlatformAdminGroupByOutputType[P]>
+            : GetScalarType<T[P], PlatformAdminGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlatformAdminSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    username?: boolean
+    password?: boolean
+    role?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["platformAdmin"]>
+
+  export type PlatformAdminSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    username?: boolean
+    password?: boolean
+    role?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["platformAdmin"]>
+
+  export type PlatformAdminSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    username?: boolean
+    password?: boolean
+    role?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["platformAdmin"]>
+
+  export type PlatformAdminSelectScalar = {
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    username?: boolean
+    password?: boolean
+    role?: boolean
+    createdAt?: boolean
+  }
+
+  export type PlatformAdminOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "username" | "password" | "role" | "createdAt", ExtArgs["result"]["platformAdmin"]>
+
+  export type $PlatformAdminPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlatformAdmin"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      email: string
+      username: string
+      password: string
+      role: string
+      createdAt: Date
+    }, ExtArgs["result"]["platformAdmin"]>
+    composites: {}
+  }
+
+  type PlatformAdminGetPayload<S extends boolean | null | undefined | PlatformAdminDefaultArgs> = $Result.GetResult<Prisma.$PlatformAdminPayload, S>
+
+  type PlatformAdminCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlatformAdminFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlatformAdminCountAggregateInputType | true
+    }
+
+  export interface PlatformAdminDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlatformAdmin'], meta: { name: 'PlatformAdmin' } }
+    /**
+     * Find zero or one PlatformAdmin that matches the filter.
+     * @param {PlatformAdminFindUniqueArgs} args - Arguments to find a PlatformAdmin
+     * @example
+     * // Get one PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlatformAdminFindUniqueArgs>(args: SelectSubset<T, PlatformAdminFindUniqueArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlatformAdmin that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlatformAdminFindUniqueOrThrowArgs} args - Arguments to find a PlatformAdmin
+     * @example
+     * // Get one PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlatformAdminFindUniqueOrThrowArgs>(args: SelectSubset<T, PlatformAdminFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformAdmin that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminFindFirstArgs} args - Arguments to find a PlatformAdmin
+     * @example
+     * // Get one PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlatformAdminFindFirstArgs>(args?: SelectSubset<T, PlatformAdminFindFirstArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlatformAdmin that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminFindFirstOrThrowArgs} args - Arguments to find a PlatformAdmin
+     * @example
+     * // Get one PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlatformAdminFindFirstOrThrowArgs>(args?: SelectSubset<T, PlatformAdminFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlatformAdmins that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlatformAdmins
+     * const platformAdmins = await prisma.platformAdmin.findMany()
+     * 
+     * // Get first 10 PlatformAdmins
+     * const platformAdmins = await prisma.platformAdmin.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const platformAdminWithIdOnly = await prisma.platformAdmin.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlatformAdminFindManyArgs>(args?: SelectSubset<T, PlatformAdminFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlatformAdmin.
+     * @param {PlatformAdminCreateArgs} args - Arguments to create a PlatformAdmin.
+     * @example
+     * // Create one PlatformAdmin
+     * const PlatformAdmin = await prisma.platformAdmin.create({
+     *   data: {
+     *     // ... data to create a PlatformAdmin
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlatformAdminCreateArgs>(args: SelectSubset<T, PlatformAdminCreateArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlatformAdmins.
+     * @param {PlatformAdminCreateManyArgs} args - Arguments to create many PlatformAdmins.
+     * @example
+     * // Create many PlatformAdmins
+     * const platformAdmin = await prisma.platformAdmin.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlatformAdminCreateManyArgs>(args?: SelectSubset<T, PlatformAdminCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlatformAdmins and returns the data saved in the database.
+     * @param {PlatformAdminCreateManyAndReturnArgs} args - Arguments to create many PlatformAdmins.
+     * @example
+     * // Create many PlatformAdmins
+     * const platformAdmin = await prisma.platformAdmin.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlatformAdmins and only return the `id`
+     * const platformAdminWithIdOnly = await prisma.platformAdmin.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlatformAdminCreateManyAndReturnArgs>(args?: SelectSubset<T, PlatformAdminCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlatformAdmin.
+     * @param {PlatformAdminDeleteArgs} args - Arguments to delete one PlatformAdmin.
+     * @example
+     * // Delete one PlatformAdmin
+     * const PlatformAdmin = await prisma.platformAdmin.delete({
+     *   where: {
+     *     // ... filter to delete one PlatformAdmin
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlatformAdminDeleteArgs>(args: SelectSubset<T, PlatformAdminDeleteArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlatformAdmin.
+     * @param {PlatformAdminUpdateArgs} args - Arguments to update one PlatformAdmin.
+     * @example
+     * // Update one PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlatformAdminUpdateArgs>(args: SelectSubset<T, PlatformAdminUpdateArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlatformAdmins.
+     * @param {PlatformAdminDeleteManyArgs} args - Arguments to filter PlatformAdmins to delete.
+     * @example
+     * // Delete a few PlatformAdmins
+     * const { count } = await prisma.platformAdmin.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlatformAdminDeleteManyArgs>(args?: SelectSubset<T, PlatformAdminDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformAdmins.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlatformAdmins
+     * const platformAdmin = await prisma.platformAdmin.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlatformAdminUpdateManyArgs>(args: SelectSubset<T, PlatformAdminUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlatformAdmins and returns the data updated in the database.
+     * @param {PlatformAdminUpdateManyAndReturnArgs} args - Arguments to update many PlatformAdmins.
+     * @example
+     * // Update many PlatformAdmins
+     * const platformAdmin = await prisma.platformAdmin.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlatformAdmins and only return the `id`
+     * const platformAdminWithIdOnly = await prisma.platformAdmin.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlatformAdminUpdateManyAndReturnArgs>(args: SelectSubset<T, PlatformAdminUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlatformAdmin.
+     * @param {PlatformAdminUpsertArgs} args - Arguments to update or create a PlatformAdmin.
+     * @example
+     * // Update or create a PlatformAdmin
+     * const platformAdmin = await prisma.platformAdmin.upsert({
+     *   create: {
+     *     // ... data to create a PlatformAdmin
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlatformAdmin we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlatformAdminUpsertArgs>(args: SelectSubset<T, PlatformAdminUpsertArgs<ExtArgs>>): Prisma__PlatformAdminClient<$Result.GetResult<Prisma.$PlatformAdminPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlatformAdmins.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminCountArgs} args - Arguments to filter PlatformAdmins to count.
+     * @example
+     * // Count the number of PlatformAdmins
+     * const count = await prisma.platformAdmin.count({
+     *   where: {
+     *     // ... the filter for the PlatformAdmins we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlatformAdminCountArgs>(
+      args?: Subset<T, PlatformAdminCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlatformAdminCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlatformAdmin.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlatformAdminAggregateArgs>(args: Subset<T, PlatformAdminAggregateArgs>): Prisma.PrismaPromise<GetPlatformAdminAggregateType<T>>
+
+    /**
+     * Group by PlatformAdmin.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlatformAdminGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlatformAdminGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlatformAdminGroupByArgs['orderBy'] }
+        : { orderBy?: PlatformAdminGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlatformAdminGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlatformAdminGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlatformAdmin model
+   */
+  readonly fields: PlatformAdminFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlatformAdmin.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlatformAdminClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlatformAdmin model
+   */
+  interface PlatformAdminFieldRefs {
+    readonly id: FieldRef<"PlatformAdmin", 'String'>
+    readonly name: FieldRef<"PlatformAdmin", 'String'>
+    readonly email: FieldRef<"PlatformAdmin", 'String'>
+    readonly username: FieldRef<"PlatformAdmin", 'String'>
+    readonly password: FieldRef<"PlatformAdmin", 'String'>
+    readonly role: FieldRef<"PlatformAdmin", 'String'>
+    readonly createdAt: FieldRef<"PlatformAdmin", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlatformAdmin findUnique
+   */
+  export type PlatformAdminFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter, which PlatformAdmin to fetch.
+     */
+    where: PlatformAdminWhereUniqueInput
+  }
+
+  /**
+   * PlatformAdmin findUniqueOrThrow
+   */
+  export type PlatformAdminFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter, which PlatformAdmin to fetch.
+     */
+    where: PlatformAdminWhereUniqueInput
+  }
+
+  /**
+   * PlatformAdmin findFirst
+   */
+  export type PlatformAdminFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter, which PlatformAdmin to fetch.
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformAdmins to fetch.
+     */
+    orderBy?: PlatformAdminOrderByWithRelationInput | PlatformAdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformAdmins.
+     */
+    cursor?: PlatformAdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformAdmins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformAdmins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformAdmins.
+     */
+    distinct?: PlatformAdminScalarFieldEnum | PlatformAdminScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformAdmin findFirstOrThrow
+   */
+  export type PlatformAdminFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter, which PlatformAdmin to fetch.
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformAdmins to fetch.
+     */
+    orderBy?: PlatformAdminOrderByWithRelationInput | PlatformAdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlatformAdmins.
+     */
+    cursor?: PlatformAdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformAdmins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformAdmins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformAdmins.
+     */
+    distinct?: PlatformAdminScalarFieldEnum | PlatformAdminScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformAdmin findMany
+   */
+  export type PlatformAdminFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter, which PlatformAdmins to fetch.
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlatformAdmins to fetch.
+     */
+    orderBy?: PlatformAdminOrderByWithRelationInput | PlatformAdminOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlatformAdmins.
+     */
+    cursor?: PlatformAdminWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlatformAdmins from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlatformAdmins.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlatformAdmins.
+     */
+    distinct?: PlatformAdminScalarFieldEnum | PlatformAdminScalarFieldEnum[]
+  }
+
+  /**
+   * PlatformAdmin create
+   */
+  export type PlatformAdminCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * The data needed to create a PlatformAdmin.
+     */
+    data: XOR<PlatformAdminCreateInput, PlatformAdminUncheckedCreateInput>
+  }
+
+  /**
+   * PlatformAdmin createMany
+   */
+  export type PlatformAdminCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlatformAdmins.
+     */
+    data: PlatformAdminCreateManyInput | PlatformAdminCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlatformAdmin createManyAndReturn
+   */
+  export type PlatformAdminCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlatformAdmins.
+     */
+    data: PlatformAdminCreateManyInput | PlatformAdminCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlatformAdmin update
+   */
+  export type PlatformAdminUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * The data needed to update a PlatformAdmin.
+     */
+    data: XOR<PlatformAdminUpdateInput, PlatformAdminUncheckedUpdateInput>
+    /**
+     * Choose, which PlatformAdmin to update.
+     */
+    where: PlatformAdminWhereUniqueInput
+  }
+
+  /**
+   * PlatformAdmin updateMany
+   */
+  export type PlatformAdminUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlatformAdmins.
+     */
+    data: XOR<PlatformAdminUpdateManyMutationInput, PlatformAdminUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformAdmins to update
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * Limit how many PlatformAdmins to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformAdmin updateManyAndReturn
+   */
+  export type PlatformAdminUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * The data used to update PlatformAdmins.
+     */
+    data: XOR<PlatformAdminUpdateManyMutationInput, PlatformAdminUncheckedUpdateManyInput>
+    /**
+     * Filter which PlatformAdmins to update
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * Limit how many PlatformAdmins to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformAdmin upsert
+   */
+  export type PlatformAdminUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * The filter to search for the PlatformAdmin to update in case it exists.
+     */
+    where: PlatformAdminWhereUniqueInput
+    /**
+     * In case the PlatformAdmin found by the `where` argument doesn't exist, create a new PlatformAdmin with this data.
+     */
+    create: XOR<PlatformAdminCreateInput, PlatformAdminUncheckedCreateInput>
+    /**
+     * In case the PlatformAdmin was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlatformAdminUpdateInput, PlatformAdminUncheckedUpdateInput>
+  }
+
+  /**
+   * PlatformAdmin delete
+   */
+  export type PlatformAdminDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+    /**
+     * Filter which PlatformAdmin to delete.
+     */
+    where: PlatformAdminWhereUniqueInput
+  }
+
+  /**
+   * PlatformAdmin deleteMany
+   */
+  export type PlatformAdminDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlatformAdmins to delete
+     */
+    where?: PlatformAdminWhereInput
+    /**
+     * Limit how many PlatformAdmins to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlatformAdmin without action
+   */
+  export type PlatformAdminDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlatformAdmin
+     */
+    select?: PlatformAdminSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlatformAdmin
+     */
+    omit?: PlatformAdminOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14634,6 +15863,14 @@ export namespace Prisma {
     workingHours: 'workingHours',
     isVerified: 'isVerified',
     subscriptionPlan: 'subscriptionPlan',
+    chainName: 'chainName',
+    branchName: 'branchName',
+    subscriptionStart: 'subscriptionStart',
+    subscriptionEnd: 'subscriptionEnd',
+    subscriptionStatus: 'subscriptionStatus',
+    monthlyFee: 'monthlyFee',
+    branchesCount: 'branchesCount',
+    isFounderPromo: 'isFounderPromo',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14809,6 +16046,19 @@ export namespace Prisma {
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+  export const PlatformAdminScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    email: 'email',
+    username: 'username',
+    password: 'password',
+    role: 'role',
+    createdAt: 'createdAt'
+  };
+
+  export type PlatformAdminScalarFieldEnum = (typeof PlatformAdminScalarFieldEnum)[keyof typeof PlatformAdminScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -14932,6 +16182,14 @@ export namespace Prisma {
     workingHours?: StringFilter<"Pharmacy"> | string
     isVerified?: BoolFilter<"Pharmacy"> | boolean
     subscriptionPlan?: StringFilter<"Pharmacy"> | string
+    chainName?: StringNullableFilter<"Pharmacy"> | string | null
+    branchName?: StringNullableFilter<"Pharmacy"> | string | null
+    subscriptionStart?: DateTimeFilter<"Pharmacy"> | Date | string
+    subscriptionEnd?: DateTimeNullableFilter<"Pharmacy"> | Date | string | null
+    subscriptionStatus?: StringFilter<"Pharmacy"> | string
+    monthlyFee?: FloatFilter<"Pharmacy"> | number
+    branchesCount?: IntFilter<"Pharmacy"> | number
+    isFounderPromo?: BoolFilter<"Pharmacy"> | boolean
     createdAt?: DateTimeFilter<"Pharmacy"> | Date | string
     updatedAt?: DateTimeFilter<"Pharmacy"> | Date | string
     staff?: PharmacyStaffListRelationFilter
@@ -14966,6 +16224,14 @@ export namespace Prisma {
     workingHours?: SortOrder
     isVerified?: SortOrder
     subscriptionPlan?: SortOrder
+    chainName?: SortOrderInput | SortOrder
+    branchName?: SortOrderInput | SortOrder
+    subscriptionStart?: SortOrder
+    subscriptionEnd?: SortOrderInput | SortOrder
+    subscriptionStatus?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
+    isFounderPromo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     staff?: PharmacyStaffOrderByRelationAggregateInput
@@ -15003,6 +16269,14 @@ export namespace Prisma {
     workingHours?: StringFilter<"Pharmacy"> | string
     isVerified?: BoolFilter<"Pharmacy"> | boolean
     subscriptionPlan?: StringFilter<"Pharmacy"> | string
+    chainName?: StringNullableFilter<"Pharmacy"> | string | null
+    branchName?: StringNullableFilter<"Pharmacy"> | string | null
+    subscriptionStart?: DateTimeFilter<"Pharmacy"> | Date | string
+    subscriptionEnd?: DateTimeNullableFilter<"Pharmacy"> | Date | string | null
+    subscriptionStatus?: StringFilter<"Pharmacy"> | string
+    monthlyFee?: FloatFilter<"Pharmacy"> | number
+    branchesCount?: IntFilter<"Pharmacy"> | number
+    isFounderPromo?: BoolFilter<"Pharmacy"> | boolean
     createdAt?: DateTimeFilter<"Pharmacy"> | Date | string
     updatedAt?: DateTimeFilter<"Pharmacy"> | Date | string
     staff?: PharmacyStaffListRelationFilter
@@ -15037,6 +16311,14 @@ export namespace Prisma {
     workingHours?: SortOrder
     isVerified?: SortOrder
     subscriptionPlan?: SortOrder
+    chainName?: SortOrderInput | SortOrder
+    branchName?: SortOrderInput | SortOrder
+    subscriptionStart?: SortOrder
+    subscriptionEnd?: SortOrderInput | SortOrder
+    subscriptionStatus?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
+    isFounderPromo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PharmacyCountOrderByAggregateInput
@@ -15074,6 +16356,14 @@ export namespace Prisma {
     workingHours?: StringWithAggregatesFilter<"Pharmacy"> | string
     isVerified?: BoolWithAggregatesFilter<"Pharmacy"> | boolean
     subscriptionPlan?: StringWithAggregatesFilter<"Pharmacy"> | string
+    chainName?: StringNullableWithAggregatesFilter<"Pharmacy"> | string | null
+    branchName?: StringNullableWithAggregatesFilter<"Pharmacy"> | string | null
+    subscriptionStart?: DateTimeWithAggregatesFilter<"Pharmacy"> | Date | string
+    subscriptionEnd?: DateTimeNullableWithAggregatesFilter<"Pharmacy"> | Date | string | null
+    subscriptionStatus?: StringWithAggregatesFilter<"Pharmacy"> | string
+    monthlyFee?: FloatWithAggregatesFilter<"Pharmacy"> | number
+    branchesCount?: IntWithAggregatesFilter<"Pharmacy"> | number
+    isFounderPromo?: BoolWithAggregatesFilter<"Pharmacy"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Pharmacy"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Pharmacy"> | Date | string
   }
@@ -15969,6 +17259,68 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
 
+  export type PlatformAdminWhereInput = {
+    AND?: PlatformAdminWhereInput | PlatformAdminWhereInput[]
+    OR?: PlatformAdminWhereInput[]
+    NOT?: PlatformAdminWhereInput | PlatformAdminWhereInput[]
+    id?: StringFilter<"PlatformAdmin"> | string
+    name?: StringFilter<"PlatformAdmin"> | string
+    email?: StringFilter<"PlatformAdmin"> | string
+    username?: StringFilter<"PlatformAdmin"> | string
+    password?: StringFilter<"PlatformAdmin"> | string
+    role?: StringFilter<"PlatformAdmin"> | string
+    createdAt?: DateTimeFilter<"PlatformAdmin"> | Date | string
+  }
+
+  export type PlatformAdminOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    username?: SortOrder
+    password?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformAdminWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    email?: string
+    username?: string
+    AND?: PlatformAdminWhereInput | PlatformAdminWhereInput[]
+    OR?: PlatformAdminWhereInput[]
+    NOT?: PlatformAdminWhereInput | PlatformAdminWhereInput[]
+    name?: StringFilter<"PlatformAdmin"> | string
+    password?: StringFilter<"PlatformAdmin"> | string
+    role?: StringFilter<"PlatformAdmin"> | string
+    createdAt?: DateTimeFilter<"PlatformAdmin"> | Date | string
+  }, "id" | "email" | "username">
+
+  export type PlatformAdminOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    username?: SortOrder
+    password?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    _count?: PlatformAdminCountOrderByAggregateInput
+    _max?: PlatformAdminMaxOrderByAggregateInput
+    _min?: PlatformAdminMinOrderByAggregateInput
+  }
+
+  export type PlatformAdminScalarWhereWithAggregatesInput = {
+    AND?: PlatformAdminScalarWhereWithAggregatesInput | PlatformAdminScalarWhereWithAggregatesInput[]
+    OR?: PlatformAdminScalarWhereWithAggregatesInput[]
+    NOT?: PlatformAdminScalarWhereWithAggregatesInput | PlatformAdminScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    name?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    email?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    username?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    password?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    role?: StringWithAggregatesFilter<"PlatformAdmin"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PlatformAdmin"> | Date | string
+  }
+
   export type PharmacyCreateInput = {
     id?: string
     slug: string
@@ -15994,6 +17346,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffCreateNestedManyWithoutPharmacyInput
@@ -16028,6 +17388,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffUncheckedCreateNestedManyWithoutPharmacyInput
@@ -16062,6 +17430,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUpdateManyWithoutPharmacyNestedInput
@@ -16096,6 +17472,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -16130,6 +17514,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16159,6 +17551,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16188,6 +17588,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17198,6 +18606,76 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PlatformAdminCreateInput = {
+    id?: string
+    name: string
+    email: string
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+  }
+
+  export type PlatformAdminUncheckedCreateInput = {
+    id?: string
+    name: string
+    email: string
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+  }
+
+  export type PlatformAdminUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformAdminUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformAdminCreateManyInput = {
+    id?: string
+    name: string
+    email: string
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+  }
+
+  export type PlatformAdminUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlatformAdminUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17264,6 +18742,28 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type PharmacyStaffListRelationFilter = {
@@ -17346,6 +18846,14 @@ export namespace Prisma {
     workingHours?: SortOrder
     isVerified?: SortOrder
     subscriptionPlan?: SortOrder
+    chainName?: SortOrder
+    branchName?: SortOrder
+    subscriptionStart?: SortOrder
+    subscriptionEnd?: SortOrder
+    subscriptionStatus?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
+    isFounderPromo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17355,6 +18863,8 @@ export namespace Prisma {
     lng?: SortOrder
     rating?: SortOrder
     deliveryFee?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
   }
 
   export type PharmacyMaxOrderByAggregateInput = {
@@ -17382,6 +18892,14 @@ export namespace Prisma {
     workingHours?: SortOrder
     isVerified?: SortOrder
     subscriptionPlan?: SortOrder
+    chainName?: SortOrder
+    branchName?: SortOrder
+    subscriptionStart?: SortOrder
+    subscriptionEnd?: SortOrder
+    subscriptionStatus?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
+    isFounderPromo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17411,6 +18929,14 @@ export namespace Prisma {
     workingHours?: SortOrder
     isVerified?: SortOrder
     subscriptionPlan?: SortOrder
+    chainName?: SortOrder
+    branchName?: SortOrder
+    subscriptionStart?: SortOrder
+    subscriptionEnd?: SortOrder
+    subscriptionStatus?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
+    isFounderPromo?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17420,6 +18946,8 @@ export namespace Prisma {
     lng?: SortOrder
     rating?: SortOrder
     deliveryFee?: SortOrder
+    monthlyFee?: SortOrder
+    branchesCount?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -17512,6 +19040,36 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type PharmacyScalarRelationFilter = {
     is?: PharmacyWhereInput
     isNot?: PharmacyWhereInput
@@ -17551,17 +19109,6 @@ export namespace Prisma {
     phone?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type CourierCountOrderByAggregateInput = {
@@ -17613,33 +19160,6 @@ export namespace Prisma {
     currentLat?: SortOrder
     currentLng?: SortOrder
     totalOrders?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type LabReportListRelationFilter = {
@@ -17732,20 +19252,6 @@ export namespace Prisma {
     lat?: SortOrder
     lng?: SortOrder
     totalOrders?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type MedicineCountOrderByAggregateInput = {
@@ -18117,6 +19623,36 @@ export namespace Prisma {
     totalAmount?: SortOrder
   }
 
+  export type PlatformAdminCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    username?: SortOrder
+    password?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformAdminMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    username?: SortOrder
+    password?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlatformAdminMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    username?: SortOrder
+    password?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type PharmacyStaffCreateNestedManyWithoutPharmacyInput = {
     create?: XOR<PharmacyStaffCreateWithoutPharmacyInput, PharmacyStaffUncheckedCreateWithoutPharmacyInput> | PharmacyStaffCreateWithoutPharmacyInput[] | PharmacyStaffUncheckedCreateWithoutPharmacyInput[]
     connectOrCreate?: PharmacyStaffCreateOrConnectWithoutPharmacyInput | PharmacyStaffCreateOrConnectWithoutPharmacyInput[]
@@ -18217,6 +19753,18 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type PharmacyStaffUpdateManyWithoutPharmacyNestedInput = {
@@ -18393,14 +19941,6 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type PharmacyUpdateOneRequiredWithoutCouriersNestedInput = {
     create?: XOR<PharmacyCreateWithoutCouriersInput, PharmacyUncheckedCreateWithoutCouriersInput>
     connectOrCreate?: PharmacyCreateOrConnectWithoutCouriersInput
@@ -18491,10 +20031,6 @@ export namespace Prisma {
     connectOrCreate?: ShortageRequestCreateOrConnectWithoutCustomerInput | ShortageRequestCreateOrConnectWithoutCustomerInput[]
     createMany?: ShortageRequestCreateManyCustomerInputEnvelope
     connect?: ShortageRequestWhereUniqueInput | ShortageRequestWhereUniqueInput[]
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrderUpdateManyWithoutCustomerNestedInput = {
@@ -18971,6 +20507,28 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -18986,17 +20544,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -19081,6 +20628,20 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -19095,31 +20656,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type PharmacyStaffCreateWithoutPharmacyInput = {
@@ -19505,6 +21041,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     inventory?: PharmacyInventoryCreateNestedManyWithoutPharmacyInput
@@ -19538,6 +21082,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     inventory?: PharmacyInventoryUncheckedCreateNestedManyWithoutPharmacyInput
@@ -19587,6 +21139,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inventory?: PharmacyInventoryUpdateManyWithoutPharmacyNestedInput
@@ -19620,6 +21180,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     inventory?: PharmacyInventoryUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -19653,6 +21221,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffCreateNestedManyWithoutPharmacyInput
@@ -19686,6 +21262,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffUncheckedCreateNestedManyWithoutPharmacyInput
@@ -19789,6 +21373,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUpdateManyWithoutPharmacyNestedInput
@@ -19822,6 +21414,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -20184,6 +21784,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffCreateNestedManyWithoutPharmacyInput
@@ -20217,6 +21825,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffUncheckedCreateNestedManyWithoutPharmacyInput
@@ -20309,6 +21925,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUpdateManyWithoutPharmacyNestedInput
@@ -20342,6 +21966,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -20475,6 +22107,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffCreateNestedManyWithoutPharmacyInput
@@ -20508,6 +22148,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffUncheckedCreateNestedManyWithoutPharmacyInput
@@ -20668,6 +22316,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUpdateManyWithoutPharmacyNestedInput
@@ -20701,6 +22357,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUncheckedUpdateManyWithoutPharmacyNestedInput
@@ -21036,6 +22700,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffCreateNestedManyWithoutPharmacyInput
@@ -21069,6 +22741,14 @@ export namespace Prisma {
     workingHours?: string
     isVerified?: boolean
     subscriptionPlan?: string
+    chainName?: string | null
+    branchName?: string | null
+    subscriptionStart?: Date | string
+    subscriptionEnd?: Date | string | null
+    subscriptionStatus?: string
+    monthlyFee?: number
+    branchesCount?: number
+    isFounderPromo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     staff?: PharmacyStaffUncheckedCreateNestedManyWithoutPharmacyInput
@@ -21270,6 +22950,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUpdateManyWithoutPharmacyNestedInput
@@ -21303,6 +22991,14 @@ export namespace Prisma {
     workingHours?: StringFieldUpdateOperationsInput | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     subscriptionPlan?: StringFieldUpdateOperationsInput | string
+    chainName?: NullableStringFieldUpdateOperationsInput | string | null
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscriptionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionStatus?: StringFieldUpdateOperationsInput | string
+    monthlyFee?: FloatFieldUpdateOperationsInput | number
+    branchesCount?: IntFieldUpdateOperationsInput | number
+    isFounderPromo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: PharmacyStaffUncheckedUpdateManyWithoutPharmacyNestedInput
