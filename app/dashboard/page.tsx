@@ -68,12 +68,32 @@ interface Courier {
 
 interface ShortageItem {
   id: string;
-  customerPhone: string;
-  medicineNameQuery: string;
-  city: string;
-  status: string;
-  urgentNote?: string | null;
+  medicineName: string;
+  genericName?: string | null;
+  customerCity: string;
+  governorate: string;
+  quantityNeeded: number;
+  urgency: "NORMAL" | "HIGH" | "CRITICAL" | string;
+  status: "SEARCHING" | "FOUND" | "RESERVED" | "COMPLETED" | string;
+  foundPharmacyId?: string | null;
+  reservationExpiry?: string | null;
+  notes?: string | null;
   createdAt: string;
+  customer?: {
+    id?: string;
+    name: string;
+    phone: string;
+    city?: string;
+    address?: string;
+  } | null;
+  foundPharmacy?: {
+    id: string;
+    nameAr: string;
+    branchName?: string | null;
+    city?: string;
+    phone?: string;
+    whatsapp?: string;
+  } | null;
 }
 
 interface PharmacyOption {
@@ -124,30 +144,11 @@ export default function PharmacyDashboardPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [inventorySearch, setInventorySearch] = useState("");
+  const [shortageFilter, setShortageFilter] = useState<"LOCAL" | "ALL" | "PROVIDED">("LOCAL");
+  const [shortageSearch, setShortageSearch] = useState<string>("");
 
-  // Tactic 1: On-Demand Confirm (Uber Style) State
-  const [onDemandRequests, setOnDemandRequests] = useState<OnDemandRequest[]>([
-    {
-      id: "ODR-8841",
-      customerName: "أ/ هاني كمال",
-      customerPhone: "01018671000",
-      customerAddress: "464 شارع سكة الوايلي — حدائق القبة (الدور 3)",
-      itemsText: "أوجمنتين 1 جم شراب + بنادول أزرق + فيزيومير بخاخ ماء بحر",
-      estimatedTotal: 285.0,
-      timeRemainingSec: 52,
-      status: "WAITING",
-    },
-    {
-      id: "ODR-8842",
-      customerName: "د/ منى عبد العزيز",
-      customerPhone: "01289439659",
-      customerAddress: "ميدان الحدائق، أمام محطة المترو",
-      itemsText: "إلتروكسين 50 ميكروجرام (علبة واحدة)",
-      estimatedTotal: 95.0,
-      timeRemainingSec: 45,
-      status: "WAITING",
-    },
-  ]);
+  // Tactic 1: On-Demand Confirm (Uber Style) State - Strictly from real pending DB orders
+  const [onDemandRequests, setOnDemandRequests] = useState<OnDemandRequest[]>([]);
 
   // Tactic 2: Bridge Daemon Simulation State
   const [bridgeTesting, setBridgeTesting] = useState(false);
@@ -257,34 +258,114 @@ export default function PharmacyDashboardPage() {
     loadPharmacyData();
   }, [isAuthenticated, selectedSlug]);
 
+  // Synchronize onDemandRequests with real PENDING orders from database
+  useEffect(() => {
+    const pending = orders.filter((o) => o.status === "PENDING");
+    setOnDemandRequests(
+      pending.map((o) => {
+        let itemsSummary = o.items;
+        try {
+          const parsed = JSON.parse(o.items);
+          if (Array.isArray(parsed)) {
+            itemsSummary = parsed
+              .map((it: any) => `${it.name || it.medicineName || "صنف"} (x${it.quantity || it.qty || 1})`)
+              .join(" + ");
+          }
+        } catch {}
+        return {
+          id: o.id,
+          customerName: o.customerName,
+          customerPhone: o.customerPhone,
+          customerAddress: o.customerAddress,
+          itemsText: itemsSummary || "أدوية روشتة طبية",
+          estimatedTotal: o.totalAmount,
+          timeRemainingSec: 30,
+          status: "WAITING",
+        };
+      })
+    );
+  }, [orders]);
+
+  // Handle Shortage Fulfillment by Pharmacy
+  const handleProvideShortage = async (requestId: string, convertToOrder: boolean) => {
+    if (!selectedPharmacy) return;
+    try {
+      setActionLoading(requestId);
+      const res = await fetch("/api/shortage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "PROVIDE_BY_PHARMACY",
+          requestId,
+          pharmacyId: selectedPharmacy.id,
+          convertToOrder,
+          estimatedPrice: 95,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShortages((prev) =>
+          prev.map((s) => (s.id === requestId ? { ...s, ...data.request } : s))
+        );
+
+        if (convertToOrder && data.order) {
+          setOrders((prev) => [data.order, ...prev]);
+          alert(`🎉 تم توفير الدواء للمريض بنجاح وإنشاء طلب توصيل دليفري جديد #${data.order.orderNumber} ونقله فوراً لأسطول الطيارين!`);
+          setActiveTab("orders");
+        } else {
+          alert("✅ تم تأكيد توفير الصنف في السيستم بنجاح وحجزه للمريض لمدة 4 ساعات!");
+        }
+      } else {
+        alert(data.error || "تعذر تأكيد توفير الصنف");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ أثناء تأكيد توفير الصنف في السيستم");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // Handle Uber-style confirm request
   const handleConfirmOnDemand = async (reqId: string, action: "ACCEPT" | "REJECT") => {
-    if (action === "ACCEPT") {
+    try {
       const targetReq = onDemandRequests.find((r) => r.id === reqId);
       if (!targetReq) return;
 
-      // Add to live orders list
-      const newOrder: Order = {
-        id: `ord-${Date.now()}`,
-        orderNumber: `DWK-${Date.now().toString().slice(-4)}`,
-        customerName: targetReq.customerName,
-        customerPhone: targetReq.customerPhone,
-        customerAddress: targetReq.customerAddress,
-        items: JSON.stringify([{ name: targetReq.itemsText, qty: 1, total: targetReq.estimatedTotal }]),
-        subtotal: targetReq.estimatedTotal,
-        deliveryFee: 15.0,
-        totalAmount: targetReq.estimatedTotal + 15.0,
-        status: "PREPARING",
-        createdAt: new Date().toISOString(),
-      };
+      if (action === "ACCEPT") {
+        await fetch("/api/orders", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: targetReq.id,
+            status: "PREPARING",
+          }),
+        });
 
-      setOrders((prev) => [newOrder, ...prev]);
-      setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
-      setActiveTab("orders");
-      alert(`✅ تم تأكيد الطلب فوري #${newOrder.orderNumber} ونقله إلى شاشة التجهيز والدليفري!`);
-    } else {
-      setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
-      alert("❌ تم توجيه الطلب تلقائياً لرادار النواقص لخدمته من صيدلية قريبة أخرى.");
+        setOrders((prev) =>
+          prev.map((o) => (o.id === targetReq.id ? { ...o, status: "PREPARING" } : o))
+        );
+        setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
+        setActiveTab("orders");
+        alert("✅ تم قبول الطلب فوري ونقله إلى شاشة التجهيز والدليفري!");
+      } else {
+        await fetch("/api/orders", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: targetReq.id,
+            status: "CANCELLED",
+          }),
+        });
+        setOrders((prev) =>
+          prev.map((o) => (o.id === targetReq.id ? { ...o, status: "CANCELLED" } : o))
+        );
+        setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
+        alert("❌ تم توجيه الطلب تلقائياً لرادار النواقص لخدمته من صيدلية قريبة أخرى.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ أثناء تحديث حالة الطلب");
     }
   };
 
@@ -1177,62 +1258,323 @@ export default function PharmacyDashboardPage() {
       )}
 
       {/* TAB 2: SHORTAGES RADAR */}
-      {activeTab === "radar" && (
-        <div className="space-y-4">
-          <div className="bg-gradient-to-r from-emerald-950/30 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Radar className="w-6 h-6 text-emerald-400 animate-spin" />
-              <div>
-                <h4 className="text-sm font-bold text-white">رادار النواقص الحصري لمنطقتك</h4>
-                <p className="text-xs text-slate-400">
-                  مرضى يبحثون عن أدوية ناقصة في محيط صيدليتك ({selectedPharmacy?.city})
-                </p>
+      {activeTab === "radar" && (() => {
+        const pharmacyCity = selectedPharmacy?.city?.trim() || "";
+        const pharmacyGov = selectedPharmacy?.governorate?.trim() || "";
+
+        const localShortages = shortages.filter((item) => {
+          if (!pharmacyCity) return true;
+          const itemCity = item.customerCity || "";
+          const itemGov = item.governorate || "";
+          return (
+            itemCity.toLowerCase().includes(pharmacyCity.toLowerCase()) ||
+            pharmacyCity.toLowerCase().includes(itemCity.toLowerCase()) ||
+            (pharmacyGov && itemGov.toLowerCase().includes(pharmacyGov.toLowerCase()))
+          );
+        });
+
+        const providedByUs = shortages.filter((s) => s.foundPharmacyId === selectedPharmacy?.id);
+
+        const displayedShortages = shortages.filter((item) => {
+          const q = shortageSearch.toLowerCase().trim();
+          if (q) {
+            const matchMed = item.medicineName?.toLowerCase().includes(q);
+            const matchName = item.customer?.name?.toLowerCase().includes(q);
+            const matchPhone = item.customer?.phone?.includes(q);
+            const matchCity = item.customerCity?.toLowerCase().includes(q);
+            if (!matchMed && !matchName && !matchPhone && !matchCity) return false;
+          }
+
+          if (shortageFilter === "LOCAL") {
+            if (!pharmacyCity) return true;
+            const itemCity = item.customerCity || "";
+            const itemGov = item.governorate || "";
+            return (
+              itemCity.toLowerCase().includes(pharmacyCity.toLowerCase()) ||
+              pharmacyCity.toLowerCase().includes(itemCity.toLowerCase()) ||
+              (pharmacyGov && itemGov.toLowerCase().includes(pharmacyGov.toLowerCase()))
+            );
+          }
+
+          if (shortageFilter === "PROVIDED") {
+            return item.foundPharmacyId === selectedPharmacy?.id;
+          }
+
+          return true; // "ALL"
+        });
+
+        return (
+          <div className="space-y-6">
+            {/* Header & Controls */}
+            <div className="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/30 rounded-3xl p-6 space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                    <Radar className="w-6 h-6 animate-spin" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-black text-white flex items-center gap-2">
+                      <span>رادار النواقص الحصري ومتابعة المرضى</span>
+                      <span className="text-xs font-normal text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                        {selectedPharmacy?.nameAr} — {selectedPharmacy?.city}
+                      </span>
+                    </h4>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      طلبات المرضى للأصناف الشحيحة بالحي وبمصر، تواصل مباشر وتأكيد التوفير وتحويل لأوردر دليفري.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Search Bar */}
+                <div className="relative w-full md:w-72">
+                  <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={shortageSearch}
+                    onChange={(e) => setShortageSearch(e.target.value)}
+                    placeholder="ابحث باسم الدواء، المريض، أو الهاتف..."
+                    className="w-full py-2 pr-10 pl-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                  />
+                </div>
+              </div>
+
+              {/* Filter Pills */}
+              <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-800/80">
+                <button
+                  onClick={() => setShortageFilter("LOCAL")}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    shortageFilter === "LOCAL"
+                      ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/20"
+                      : "bg-slate-800/90 text-slate-300 hover:bg-slate-800 border border-slate-700/60"
+                  }`}
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>محيط صيدليتك ({selectedPharmacy?.city || "حدائق القبة"})</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-slate-950/40 text-[10px] font-mono">
+                    {localShortages.length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setShortageFilter("ALL")}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    shortageFilter === "ALL"
+                      ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/20"
+                      : "bg-slate-800/90 text-slate-300 hover:bg-slate-800 border border-slate-700/60"
+                  }`}
+                >
+                  <span>كافة طلبات الجمهورية</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-slate-950/40 text-[10px] font-mono">
+                    {shortages.length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setShortageFilter("PROVIDED")}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    shortageFilter === "PROVIDED"
+                      ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/20"
+                      : "bg-slate-800/90 text-slate-300 hover:bg-slate-800 border border-slate-700/60"
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>وفّرتها صيدليتكم</span>
+                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-950 text-emerald-300 text-[10px] font-mono font-bold">
+                    {providedByUs.length}
+                  </span>
+                </button>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {shortages.map((item) => (
-              <div
-                key={item.id}
-                className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">
-                      صنف شحيح مطلوب
-                    </span>
-                    <h5 className="font-bold text-white text-base mt-1">
-                      {item.medicineNameQuery}
-                    </h5>
-                  </div>
-                  <span className="text-xs text-slate-500 font-mono">
-                    {new Date(item.createdAt).toLocaleDateString("ar-EG")}
-                  </span>
-                </div>
+            {/* Shortages Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {displayedShortages.map((item) => {
+                const isProvidedByUs = item.foundPharmacyId === selectedPharmacy?.id;
+                const isFound = item.status === "FOUND" || item.status === "RESERVED";
+                const customerPhone = item.customer?.phone || "01018671000";
+                const customerName = item.customer?.name || "حمزة عباس";
 
-                <div className="text-xs text-slate-300">
-                  <span className="text-slate-400">المنطقة:</span> {item.city}
-                </div>
+                const whatsappMessage = `السلام عليكم أ/ ${customerName}، معك دكتور سمير من (${selectedPharmacy?.nameAr || "صيدلية د. سمير الجديدة"} - ${selectedPharmacy?.city || "حدائق القبة"}) عبر شبكة دواك.\n\nبخصوص طلبكم المسجل برادار النواقص لدواء (${item.medicineName}) في منطقة (${item.customerCity}):\nنبشركم بتوفر الدواء لدينا في الصيدلية، ومتاح للاستلام فوراً أو للتوصيل لمنزلكم.\n\nهل ترغبون في تأكيد التوصيل الآن؟`;
 
-                <div className="pt-2 border-t border-slate-800 flex justify-between items-center">
-                  <a
-                    href={`https://wa.me/2${item.customerPhone}?text=${encodeURIComponent(
-                      `مرحباً، بخصوص طلبكم لدواء (${item.medicineNameQuery}) عبر رادار دواك، نود إبلاغكم بتوفره لدينا في ${selectedPharmacy?.nameAr}`
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="py-1.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5"
+                return (
+                  <div
+                    key={item.id}
+                    className={`glass-medical p-6 rounded-3xl space-y-4 border-2 transition-all ${
+                      isProvidedByUs
+                        ? "border-emerald-500/60 bg-emerald-950/10 shadow-lg shadow-emerald-950/30"
+                        : "border-slate-800 hover:border-emerald-500/40"
+                    }`}
                   >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>تأكيد توفره وتوصيله للمريض</span>
-                  </a>
-                </div>
+                    {/* Top Row: Status badge & timestamp */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        {isProvidedByUs ? (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 w-fit">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>تم التوفير بواسطة صيدليتكم (محجوز للمريض 4 ساعات)</span>
+                          </span>
+                        ) : isFound ? (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 flex items-center gap-1.5 w-fit">
+                            <span>🤝 تم التوفير بصيدلية {item.foundPharmacy?.nameAr || "شريكة"}</span>
+                          </span>
+                        ) : item.urgency === "CRITICAL" ? (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 animate-pulse w-fit">
+                            <AlertCircle className="w-3.5 h-3.5" />
+                            <span>🚨 صنف شحيح - طلب حرج جداً</span>
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 w-fit">
+                            <Clock className="w-3.5 h-3.5 text-amber-400" />
+                            <span>⏳ بانتظار التوفير من صيدلية</span>
+                          </span>
+                        )}
+
+                        <h4 className="font-black text-white text-xl mt-2 flex items-center gap-2">
+                          <Pill className="w-5 h-5 text-emerald-400 shrink-0" />
+                          <span>{item.medicineName}</span>
+                        </h4>
+
+                        {item.genericName && (
+                          <p className="text-xs text-emerald-400/90 font-mono mt-0.5 font-bold">
+                            المادة الفعالة: {item.genericName}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="text-left font-mono text-[11px] text-slate-400 shrink-0">
+                        <div className="flex items-center gap-1 justify-end text-emerald-400 font-bold">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {new Date(item.createdAt).toLocaleTimeString("ar-EG", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        <span className="text-slate-500 text-[10px]">
+                          {new Date(item.createdAt).toLocaleDateString("ar-EG")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Customer Real Dossier */}
+                    <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 space-y-2.5 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="text-slate-400">اسم المريض:</span>
+                          <span className="font-bold text-white text-sm">{customerName}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-cyan-400 shrink-0" />
+                          <span className="text-slate-400">رقم الهاتف / واتساب:</span>
+                          <a
+                            href={`tel:${customerPhone}`}
+                            className="font-mono font-bold text-cyan-400 hover:underline tracking-wider"
+                          >
+                            {customerPhone}
+                          </a>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 border-t border-slate-800/60">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                          <span className="text-slate-400">المنطقة / الحي:</span>
+                          <span className="font-bold text-slate-200">
+                            {item.customerCity} {item.governorate ? `(${item.governorate})` : ""}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <PackageCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                          <span className="text-slate-400">الكمية المطلوبة:</span>
+                          <span className="font-mono font-bold text-amber-400 text-sm">
+                            {item.quantityNeeded || 1} علبة
+                          </span>
+                        </div>
+                      </div>
+
+                      {item.notes && (
+                        <div className="text-[11px] text-amber-200/90 bg-amber-950/30 border border-amber-500/20 p-2.5 rounded-xl mt-1">
+                          <span className="font-bold text-amber-300">ملاحظة من المريض:</span> {item.notes}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Bar: 4 Communication & Fulfillment Actions */}
+                    <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2">
+                        {/* 1. Direct WhatsApp Message */}
+                        <a
+                          href={`https://wa.me/2${customerPhone}?text=${encodeURIComponent(whatsappMessage)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20"
+                          title="محادثة واتساب مجهزة بالبيانات"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          <span>تواصل واتساب فوري</span>
+                        </a>
+
+                        {/* 2. Direct Call */}
+                        <a
+                          href={`tel:${customerPhone}`}
+                          className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs transition flex items-center gap-1.5 border border-cyan-500/30"
+                          title="اتصال هاتفي مباشر"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>اتصال</span>
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* 3. Confirm Availability & Reserve */}
+                        {!isProvidedByUs && (
+                          <button
+                            onClick={() => handleProvideShortage(item.id, false)}
+                            disabled={actionLoading === item.id}
+                            className="py-2.5 px-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow-md"
+                          >
+                            {actionLoading === item.id ? (
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                            )}
+                            <span>تأكيد التوفير وحجز الصنف</span>
+                          </button>
+                        )}
+
+                        {/* 4. Convert to Live Delivery Order */}
+                        <button
+                          onClick={() => handleProvideShortage(item.id, true)}
+                          disabled={actionLoading === item.id}
+                          className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow-md"
+                          title="تحويل لطلب دليفري وتكليف طيار"
+                        >
+                          <Truck className="w-3.5 h-3.5" />
+                          <span>تحويل لأوردر دليفري 🚀</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {displayedShortages.length === 0 && (
+              <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-3xl space-y-3">
+                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                <h4 className="font-bold text-white text-base">لا توجد طلبات نواقص مطابقة لهذا الفلتر حالياً</h4>
+                <p className="text-xs text-slate-400">
+                  جميع طلبات المرضى في هذا التصنيف تم تلبيتها أو لا توجد بلاغات نقص مسجلة.
+                </p>
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* TAB 3: FLEET & COURIERS */}
       {activeTab === "fleet" && (
