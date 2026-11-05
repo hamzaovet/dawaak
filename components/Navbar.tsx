@@ -20,6 +20,7 @@ import {
   LogOut,
   ShieldCheck,
   Lock,
+  ExternalLink,
 } from "lucide-react";
 import AuthModal from "./AuthModal";
 
@@ -98,6 +99,61 @@ export default function Navbar() {
     { href: "/dashboard", label: "بوابة الصيدلية", icon: LayoutDashboard },
     { href: "/admin", label: "بوابة المالك", icon: ShieldCheck },
   ];
+
+  // If inside management workspace (dashboard or admin), show clean dedicated management header
+  const isManagementRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
+
+  if (isManagementRoute) {
+    const isOwner = pathname.startsWith("/admin");
+    return (
+      <header className="sticky top-0 z-50 bg-[#060b13]/95 backdrop-blur-md border-b border-emerald-500/20 shadow-xl transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo & Management Badge */}
+            <div className="flex items-center gap-3">
+              <Link href="/" className="flex items-center gap-2.5 group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 p-0.5 shadow-md">
+                  <div className="w-full h-full bg-[#060b13] rounded-[10px] flex items-center justify-center">
+                    <Activity className="text-emerald-400" size={20} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xl font-black text-white">دَواك</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">
+                      {isOwner ? "Super Admin" : "Partner Portal"}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400">
+                    {isOwner ? "لوحة الإدارة العليا والتحكم بالمنصة" : "بوابة إدارة الصيدلية الشريكة"}
+                  </p>
+                </div>
+              </Link>
+            </div>
+
+            {/* Quick Management Actions */}
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs font-bold transition flex items-center gap-1.5"
+              >
+                <ExternalLink size={13} className="text-emerald-400" />
+                <span>الموقع العام للجمهور</span>
+              </Link>
+
+              <button
+                onClick={toggleTheme}
+                title="تبديل الوضع (ليلي / نهاري)"
+                className="p-2.5 rounded-xl border border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition"
+              >
+                {theme === "dark" ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-indigo-400" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <>

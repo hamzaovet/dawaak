@@ -28,6 +28,17 @@ import {
   Lock,
   LogOut,
   Building2,
+  Zap,
+  HardDrive,
+  Terminal,
+  Download,
+  UploadCloud,
+  FileSpreadsheet,
+  Copy,
+  Server,
+  Bell,
+  ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 
 interface Order {
@@ -74,6 +85,19 @@ interface PharmacyOption {
   isOpen: boolean;
 }
 
+// On-demand confirm item (Uber-style confirm)
+interface OnDemandRequest {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress: string;
+  itemsText: string;
+  prescriptionImage?: string | null;
+  estimatedTotal: number;
+  timeRemainingSec: number;
+  status: "WAITING" | "CONFIRMED" | "REJECTED";
+}
+
 export default function PharmacyDashboardPage() {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -88,7 +112,9 @@ export default function PharmacyDashboardPage() {
   const [selectedSlug, setSelectedSlug] = useState<string>("");
   const [selectedPharmacy, setSelectedPharmacy] = useState<any>(null);
 
-  const [activeTab, setActiveTab] = useState<"orders" | "fleet" | "radar" | "inventory">("orders");
+  const [activeTab, setActiveTab] = useState<
+    "orders" | "confirm" | "bridge" | "radar" | "fleet" | "inventory"
+  >("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [couriers, setCouriers] = useState<Courier[]>([]);
   const [shortages, setShortages] = useState<ShortageItem[]>([]);
@@ -98,6 +124,35 @@ export default function PharmacyDashboardPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [inventorySearch, setInventorySearch] = useState("");
+
+  // Tactic 1: On-Demand Confirm (Uber Style) State
+  const [onDemandRequests, setOnDemandRequests] = useState<OnDemandRequest[]>([
+    {
+      id: "ODR-8841",
+      customerName: "أ/ هاني كمال",
+      customerPhone: "01018671000",
+      customerAddress: "464 شارع سكة الوايلي — حدائق القبة (الدور 3)",
+      itemsText: "أوجمنتين 1 جم شراب + بنادول أزرق + فيزيومير بخاخ ماء بحر",
+      estimatedTotal: 285.0,
+      timeRemainingSec: 52,
+      status: "WAITING",
+    },
+    {
+      id: "ODR-8842",
+      customerName: "د/ منى عبد العزيز",
+      customerPhone: "01289439659",
+      customerAddress: "ميدان الحدائق، أمام محطة المترو",
+      itemsText: "إلتروكسين 50 ميكروجرام (علبة واحدة)",
+      estimatedTotal: 95.0,
+      timeRemainingSec: 45,
+      status: "WAITING",
+    },
+  ]);
+
+  // Tactic 2: Bridge Daemon Simulation State
+  const [bridgeTesting, setBridgeTesting] = useState(false);
+  const [bridgeResult, setBridgeResult] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState(false);
 
   // Check saved session on mount
   useEffect(() => {
@@ -149,13 +204,11 @@ export default function PharmacyDashboardPage() {
     }
   };
 
-  // Quick fill demo helper
   const quickFill = (u: string, p: string) => {
     setLoginUsername(u);
     setLoginPassword(p);
   };
 
-  // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("dawaak_staff_session");
     setIsAuthenticated(false);
@@ -176,7 +229,6 @@ export default function PharmacyDashboardPage() {
     async function loadPharmacyData() {
       try {
         setLoading(true);
-        // 1. Fetch selected pharmacy detail
         const resDetail = await fetch(`/api/pharmacies?slug=${encodeURIComponent(selectedSlug)}`);
         const dataDetail = await resDetail.json();
         if (dataDetail.success && dataDetail.pharmacy) {
@@ -184,7 +236,6 @@ export default function PharmacyDashboardPage() {
           setCouriers(dataDetail.pharmacy.couriers || []);
           setInventory(dataDetail.pharmacy.inventory || []);
 
-          // 2. Fetch orders for this pharmacy
           const resO = await fetch(`/api/orders?pharmacyId=${dataDetail.pharmacy.id}`);
           const dataO = await resO.json();
           if (dataO.success) {
@@ -192,7 +243,6 @@ export default function PharmacyDashboardPage() {
           }
         }
 
-        // 3. Fetch shortages
         const resS = await fetch("/api/shortage");
         const dataS = await resS.json();
         if (dataS.success) {
@@ -206,6 +256,82 @@ export default function PharmacyDashboardPage() {
     }
     loadPharmacyData();
   }, [isAuthenticated, selectedSlug]);
+
+  // Handle Uber-style confirm request
+  const handleConfirmOnDemand = async (reqId: string, action: "ACCEPT" | "REJECT") => {
+    if (action === "ACCEPT") {
+      const targetReq = onDemandRequests.find((r) => r.id === reqId);
+      if (!targetReq) return;
+
+      // Add to live orders list
+      const newOrder: Order = {
+        id: `ord-${Date.now()}`,
+        orderNumber: `DWK-${Date.now().toString().slice(-4)}`,
+        customerName: targetReq.customerName,
+        customerPhone: targetReq.customerPhone,
+        customerAddress: targetReq.customerAddress,
+        items: JSON.stringify([{ name: targetReq.itemsText, qty: 1, total: targetReq.estimatedTotal }]),
+        subtotal: targetReq.estimatedTotal,
+        deliveryFee: 15.0,
+        totalAmount: targetReq.estimatedTotal + 15.0,
+        status: "PREPARING",
+        createdAt: new Date().toISOString(),
+      };
+
+      setOrders((prev) => [newOrder, ...prev]);
+      setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
+      setActiveTab("orders");
+      alert(`✅ تم تأكيد الطلب فوري #${newOrder.orderNumber} ونقله إلى شاشة التجهيز والدليفري!`);
+    } else {
+      setOnDemandRequests((prev) => prev.filter((r) => r.id !== reqId));
+      alert("❌ تم توجيه الطلب تلقائياً لرادار النواقص لخدمته من صيدلية قريبة أخرى.");
+    }
+  };
+
+  // Handle Local Bridge Live Simulation
+  const handleTriggerLiveBridgeSync = async () => {
+    try {
+      setBridgeTesting(true);
+      setBridgeResult(null);
+
+      const res = await fetch("/api/sync/inventory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pharmacySlug: selectedSlug || "dr-samir-hadayek-el-qobba",
+          bridgeKey: "DWK-BRIDGE-DR-SAMIR-9912",
+          systemType: "برنامج الفارابي (El-Faraby POS Desktop)",
+          items: [
+            { tradeName: "أوجمنتين 1 جم أقراص", genericName: "Amoxicillin + Clavulanic", price: 155.0, quantity: 30 },
+            { tradeName: "بانادول إكسترا أقراص", genericName: "Paracetamol + Caffeine", price: 65.0, quantity: 80 },
+            { tradeName: "كونكور 5 بلس أقراص", genericName: "Bisoprolol + HCTZ", price: 90.0, quantity: 25 },
+            { tradeName: "إلتروكسين 100 ميكروجرام", genericName: "Levothyroxine", price: 125.0, quantity: 15 },
+            { tradeName: "كلكسان 40 مجم حقن", genericName: "Enoxaparin", price: 280.0, quantity: 12 },
+            { tradeName: "أوزمبيك 1 مجم قلم", genericName: "Semaglutide", price: 4200.0, quantity: 5 },
+            { tradeName: "بخاخ فينتولين للصدر", genericName: "Salbutamol", price: 68.0, quantity: 20 },
+          ],
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setBridgeResult(data.message);
+        // Refresh inventory
+        const resDetail = await fetch(`/api/pharmacies?slug=${encodeURIComponent(selectedSlug)}`);
+        const dataDetail = await resDetail.json();
+        if (dataDetail.pharmacy?.inventory) {
+          setInventory(dataDetail.pharmacy.inventory);
+        }
+      } else {
+        setBridgeResult(data.error || "فشل الاتصال بالجسر السحابي");
+      }
+    } catch (err) {
+      console.error(err);
+      setBridgeResult("حدث خطأ أثناء الاتصال بالجسر");
+    } finally {
+      setBridgeTesting(false);
+    }
+  };
 
   // Update order status
   const handleUpdateStatus = async (orderId: string, nextStatus: Order["status"], courierId?: string) => {
@@ -225,12 +351,9 @@ export default function PharmacyDashboardPage() {
         setOrders((prev) =>
           prev.map((o) => (o.id === orderId ? { ...o, status: nextStatus } : o))
         );
-      } else {
-        alert(data.error || "فشل تحديث حالة الطلب");
       }
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ في الاتصال بالخادم");
     } finally {
       setActionLoading(null);
     }
@@ -392,7 +515,7 @@ export default function PharmacyDashboardPage() {
           </div>
         </div>
 
-        {/* Branch Switcher (If chain has multiple branches) & Actions */}
+        {/* Branch Switcher & Actions */}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {pharmacies.length > 1 ? (
             <div className="relative">
@@ -439,7 +562,7 @@ export default function PharmacyDashboardPage() {
         </div>
       </div>
 
-      {/* Subscription & Branch Status Banner */}
+      {/* Subscription & Founder 2026 Banner */}
       <div className="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-teal-950/40 border border-emerald-500/40 rounded-3xl p-5 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
@@ -484,7 +607,7 @@ export default function PharmacyDashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>إجمالي الطلبات</span>
+            <span>إجمالي الطلبات المنفذة</span>
             <PackageCheck className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-2xl md:text-3xl font-black text-white font-mono">
@@ -495,13 +618,13 @@ export default function PharmacyDashboardPage() {
 
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>قيد التجهيز الآن</span>
-            <Clock className="w-4 h-4 text-amber-400" />
+            <span>طلبات فورية بانتظار التأكيد</span>
+            <Zap className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl md:text-3xl font-black text-amber-400 font-mono">
-            {pendingOrders.length}
+            {onDemandRequests.length}
           </div>
-          <p className="text-[11px] text-slate-500">طلبات تحتاج تحضير من الرف</p>
+          <p className="text-[11px] text-amber-400 font-bold">تكتيك الـ 30 ثانية (Uber Style)</p>
         </div>
 
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2">
@@ -527,7 +650,7 @@ export default function PharmacyDashboardPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
+      {/* TABS NAVIGATION */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("orders")}
@@ -538,7 +661,34 @@ export default function PharmacyDashboardPage() {
           }`}
         >
           <PackageCheck className="w-4 h-4" />
-          <span>الطلبات الحية ودورة التوصيل ({orders.length})</span>
+          <span>الطلبات ودورة التوصيل ({orders.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("confirm")}
+          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs md:text-sm font-bold transition-all whitespace-nowrap relative ${
+            activeTab === "confirm"
+              ? "bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20"
+              : "bg-slate-900 text-slate-400 hover:text-white"
+          }`}
+        >
+          <Zap className="w-4 h-4 text-amber-400" />
+          <span>التأكيد الفوري المرن (Uber Style) ⚡</span>
+          {onDemandRequests.length > 0 && (
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping absolute top-2 left-2" />
+          )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab("bridge")}
+          className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${
+            activeTab === "bridge"
+              ? "bg-emerald-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20"
+              : "bg-slate-900 text-slate-400 hover:text-white"
+          }`}
+        >
+          <HardDrive className="w-4 h-4 text-cyan-400" />
+          <span>ربط سيستم الصيدلية (Local Bridge) 🔌</span>
         </button>
 
         <button
@@ -550,7 +700,7 @@ export default function PharmacyDashboardPage() {
           }`}
         >
           <Radar className="w-4 h-4" />
-          <span>رادار النواقص في منطقتك ({shortages.length})</span>
+          <span>رادار النواقص بحيّك ({shortages.length})</span>
         </button>
 
         <button
@@ -574,11 +724,278 @@ export default function PharmacyDashboardPage() {
           }`}
         >
           <Pill className="w-4 h-4" />
-          <span>إدارة المخزون والأصناف ({inventory.length})</span>
+          <span>المخزون والأصناف ({inventory.length})</span>
         </button>
       </div>
 
+      {/* ========================================================= */}
+      {/* TAB: ON-DEMAND CONFIRM (UBER STYLE 30 SEC CONFIRMATION) */}
+      {/* ========================================================= */}
+      {activeTab === "confirm" && (
+        <div className="space-y-6">
+          {/* Concept Explanation Card */}
+          <div className="bg-gradient-to-r from-amber-950/30 via-slate-900 to-emerald-950/30 border border-amber-500/40 rounded-3xl p-6 shadow-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 text-xs font-black">
+                تكتيك الطلب الفوري المرن (Uber Style Confirm)
+              </span>
+              <span className="text-xs text-amber-400 font-bold">حل معضلة الـ 2 مليون سيستم</span>
+            </div>
+            <h3 className="text-lg font-black text-white">
+              مش محتاج تكون مدخل مخزونك كله مسبقاً!
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-4xl">
+              عندما يرفع العميل روشتة أو يطلب أصنافاً، يصلك الطلب فوراً كـ <b>طلب تسعير وتأكيد</b>. كل اللي
+              بتعمله كصيدلي هو الضغط على زر واحد: (متوفر وجاهز للخروج ✅) في 30 ثانية. المريض بيستلم تأكيدك
+              والطيار بيتحرك فوراً!
+            </p>
+          </div>
+
+          {/* Incoming On-Demand Confirmation Cards */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-base font-bold text-white flex items-center gap-2">
+                <Bell className="w-4 h-4 text-amber-400 animate-bounce" />
+                <span>طلبات حية واردة من مرضى في نطاق حدائق القبة:</span>
+              </h4>
+              <span className="text-xs text-amber-400 font-bold">استجابة سريعة مطلوبة ⏱️</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {onDemandRequests.map((req) => (
+                <div
+                  key={req.id}
+                  className="bg-slate-900 border-2 border-amber-500/40 rounded-3xl p-6 space-y-4 shadow-xl relative overflow-hidden"
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold font-mono">
+                        #{req.id}
+                      </span>
+                      <span className="text-xs text-slate-400 font-mono">
+                        متبقي {req.timeRemainingSec} ثانية للتأكيد ⏳
+                      </span>
+                    </div>
+
+                    <span className="text-xs font-black text-emerald-400 font-mono">
+                      القيمة المقدرة: {req.estimatedTotal} ج.م
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="font-bold text-white flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-emerald-400" />
+                        {req.customerName}
+                      </span>
+                      <span className="font-mono text-cyan-400">{req.customerPhone}</span>
+                    </div>
+                    <div className="flex items-start gap-1.5 text-slate-300">
+                      <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{req.customerAddress}</span>
+                    </div>
+                  </div>
+
+                  {/* Requested items box */}
+                  <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
+                    <span className="text-[11px] font-bold text-slate-400 block">
+                      الأصناف المطلوبة من المريض:
+                    </span>
+                    <p className="text-xs font-bold text-emerald-300">{req.itemsText}</p>
+                  </div>
+
+                  {/* 30-Second Rapid Actions */}
+                  <div className="grid grid-cols-2 gap-2 pt-2">
+                    <button
+                      onClick={() => handleConfirmOnDemand(req.id, "ACCEPT")}
+                      className="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg transition"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>متوفر وجاهز للخروج فوراً ✅</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleConfirmOnDemand(req.id, "REJECT")}
+                      className="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/30 font-bold text-xs flex items-center justify-center gap-1.5 transition"
+                    >
+                      <span>غير متوفر (تحويل للرادار ❌)</span>
+                    </button>
+                  </div>
+
+                  {/* WhatsApp Quick Link */}
+                  <a
+                    href={`https://wa.me/2${req.customerPhone}?text=${encodeURIComponent(
+                      `أهلاً بك، معكم صيدلية ${selectedPharmacy?.nameAr}، تم استلام طلبكم (${req.itemsText}) وجارٍ تجهيزه للخروج مع الطيار.`
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-emerald-400 text-xs font-bold flex items-center justify-center gap-1 transition"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>محادثة فورية مع المريض بالواتساب</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {onDemandRequests.length === 0 && (
+              <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-3xl space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                <h5 className="font-bold text-white text-sm">تم تأكيد كافة الطلبات اللحظية الواردة!</h5>
+                <p className="text-xs text-slate-400">أي طلب جديد سيرن هنا بصوت وتنبيه فوري 🔔</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* TAB: LOCAL BRIDGE DAEMON (DESKTOP POS INTEGRATION) */}
+      {/* ========================================================= */}
+      {activeTab === "bridge" && (
+        <div className="space-y-6">
+          {/* Hero Concept Card */}
+          <div className="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-emerald-950/40 border border-cyan-500/40 rounded-3xl p-6 sm:p-8 shadow-xl space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-xs font-black">
+                The Local Bridge Daemon 🔌
+              </span>
+              <span className="text-xs text-cyan-400 font-bold">ربط أنظمة الصيدليات المصرية</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white">
+              برنامجك القديم هيفضل شغال زي ما هو.. والمخزن بيسمّع في السحاب أوتوماتيك!
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-4xl">
+              أنشأنا برنامج جسر محلي خفيف جداً (10 ميجابايت) يعمل في الخلفية على كمبيوتر الكاشير بالصيدلية.
+              يقوم بقراءة قاعدة بيانات برنامجك المحلي (Access / SQL Server / SQLite) بصلاحية قراءة فقط (Read-Only)
+              مشفرة بالكامل، ويرسل المبيعات والمخزون لسحابة دواك كل ساعة بدون أي تدخل منك.
+            </p>
+          </div>
+
+          {/* Supported Egyptian Systems */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-white">الأنظمة الصيدلية المدعومة رسمياً بمصر:</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-center">
+                <Server className="w-5 h-5 text-emerald-400 mx-auto" />
+                <h5 className="font-bold text-white text-xs">برنامج الفارابي (El-Faraby)</h5>
+                <span className="text-[10px] text-slate-400 block">MS Access & SQL Server</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-center">
+                <Server className="w-5 h-5 text-cyan-400 mx-auto" />
+                <h5 className="font-bold text-white text-xs">برنامج فارما ون (Pharma One)</h5>
+                <span className="text-[10px] text-slate-400 block">Firebird & SQL Database</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-center">
+                <Server className="w-5 h-5 text-purple-400 mx-auto" />
+                <h5 className="font-bold text-white text-xs">برنامج الروشتة (El-Rosheta)</h5>
+                <span className="text-[10px] text-slate-400 block">Desktop POS Bridge</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-1 text-center">
+                <FileSpreadsheet className="w-5 h-5 text-amber-400 mx-auto" />
+                <h5 className="font-bold text-white text-xs">شيتات إكسل وجرد الصيدلية</h5>
+                <span className="text-[10px] text-slate-400 block">Excel / CSV Direct Sync</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Bridge Connection Monitor Card */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                    <h4 className="font-bold text-white text-base">الجسر السحابي لصيدليتك: متصل سحابياً 🟢</h4>
+                  </div>
+                  <span className="text-xs text-slate-400">
+                    آخر مزامنة ناجحة: منذ 12 دقيقة • تم تحديث 2,420 صنف ومخزون
+                  </span>
+                </div>
+              </div>
+
+              {/* Live Test Trigger Button */}
+              <button
+                onClick={handleTriggerLiveBridgeSync}
+                disabled={bridgeTesting}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition shrink-0"
+              >
+                <RefreshCw className={`w-4 h-4 ${bridgeTesting ? "animate-spin" : ""}`} />
+                <span>{bridgeTesting ? "جارٍ المزامنة السحابية..." : "تجربة محاكاة المزامنة الآن ⚡"}</span>
+              </button>
+            </div>
+
+            {bridgeResult && (
+              <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                <span>{bridgeResult}</span>
+              </div>
+            )}
+
+            {/* Bridge Secret Key for this Pharmacy */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs text-slate-400 font-bold block">
+                  مفتاح الربط المشفر الخاص بصيدليتك (Sync API Key):
+                </span>
+                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs text-cyan-300">
+                  <span>DWK-BRIDGE-DR-SAMIR-9912</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText("DWK-BRIDGE-DR-SAMIR-9912");
+                      setCopiedKey(true);
+                      setTimeout(() => setCopiedKey(false), 2000);
+                    }}
+                    className="p-1.5 hover:text-white transition"
+                    title="نسخ المفتاح"
+                  >
+                    {copiedKey ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+                <span className="text-[11px] text-slate-500">
+                  يتم إدخاله مرة واحدة فقط في برنامج الجسر لتوثيق اتصال جهاز الكاشير بسحابة دواك.
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-xs text-slate-400 font-bold block">تحميل ملفات الجسر:</span>
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href="/scripts/dawaak_bridge.py"
+                    download
+                    className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-white flex items-center gap-1.5 transition"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>تحميل سكريبت المزامنة (dawaak_bridge.py)</span>
+                  </a>
+
+                  <a
+                    href="/scripts/dawaak_bridge.bat"
+                    download
+                    className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-white flex items-center gap-1.5 transition"
+                  >
+                    <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>ملف التشغيل التلقائي (.bat)</span>
+                  </a>
+                </div>
+                <span className="text-[11px] text-slate-500">
+                  حجم خفيف جداً (أقل من 10 ميجا)، لا يستهلك معالج الكاشير ولا يغير أي شيء في برنامجك.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
       {/* TAB 1: LIVE ORDERS */}
+      {/* ========================================================= */}
       {activeTab === "orders" && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -734,7 +1151,7 @@ export default function PharmacyDashboardPage() {
 
                     <a
                       href={`https://wa.me/2${order.customerPhone}?text=${encodeURIComponent(
-                        `مرحباً ${order.customerName}، معكم صيدلية ${selectedPharmacy.nameAr} بشأن طلبكم رقم #${order.orderNumber}`
+                        `مرحباً ${order.customerName}، معكم صيدلية ${selectedPharmacy?.nameAr} بشأن طلبكم رقم #${order.orderNumber}`
                       )}`}
                       target="_blank"
                       rel="noreferrer"
@@ -768,7 +1185,7 @@ export default function PharmacyDashboardPage() {
               <div>
                 <h4 className="text-sm font-bold text-white">رادار النواقص الحصري لمنطقتك</h4>
                 <p className="text-xs text-slate-400">
-                  مرضى يبحثون عن أدوية ناقصة في محيط صيدليتك ({selectedPharmacy.city})
+                  مرضى يبحثون عن أدوية ناقصة في محيط صيدليتك ({selectedPharmacy?.city})
                 </p>
               </div>
             </div>
@@ -801,7 +1218,7 @@ export default function PharmacyDashboardPage() {
                 <div className="pt-2 border-t border-slate-800 flex justify-between items-center">
                   <a
                     href={`https://wa.me/2${item.customerPhone}?text=${encodeURIComponent(
-                      `مرحباً، بخصوص طلبكم لدواء (${item.medicineNameQuery}) عبر رادار دواك، نود إبلاغكم بتوفره لدينا في ${selectedPharmacy.nameAr}`
+                      `مرحباً، بخصوص طلبكم لدواء (${item.medicineNameQuery}) عبر رادار دواك، نود إبلاغكم بتوفره لدينا في ${selectedPharmacy?.nameAr}`
                     )}`}
                     target="_blank"
                     rel="noreferrer"

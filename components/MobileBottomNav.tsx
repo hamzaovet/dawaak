@@ -15,6 +15,11 @@ import {
 export default function MobileBottomNav() {
   const pathname = usePathname();
 
+  // Hide mobile bottom nav on management dashboards
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
+    return null;
+  }
+
   const TABS = [
     { href: "/", label: "الرئيسية", icon: Home },
     { href: "/radar", label: "الرادار", icon: Radar, badge: "حي" },
