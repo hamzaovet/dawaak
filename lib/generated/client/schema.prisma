@@ -1,0 +1,236 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/client"
+}
+
+// ----------------------------------------------------
+// 1. PHARMACY TENANT (الصيدليات المشتركة بنظام الـ White-Label)
+// ----------------------------------------------------
+model Pharmacy {
+  id                   String   @id @default(cuid())
+  slug                 String   @unique // e.g. "dr-ramon-tanta", "al-amal-cairo"
+  nameAr               String // اسم الصيدلية بالعربي
+  nameEn               String // اسم الصيدلية بالإنجليزي
+  licenseNumber        String? // رقم ترخيص وزارة الصحة
+  ownerName            String // اسم الصيدلي المدير المسؤول
+  phone                String // هاتف الصيدلية الأساسي
+  whatsapp             String // رقم الواتساب المباشر لخدمة التوصيل
+  email                String?
+  address              String // العنوان التفصيلي
+  city                 String // المدينة / المركز (طنطا، المنصورة، مدينة نصر...)
+  governorate          String // المحافظة (الغربية، القاهرة، الدقهلية...)
+  lat                  Float? // إحداثيات GPS لتحديد الأقرب للعميل
+  lng                  Float?
+  logoUrl              String? // لوجو الصيدلية
+  coverUrl             String? // غلاف صفحة الصيدلية
+  rating               Float    @default(4.9)
+  isOpen               Boolean  @default(true)
+  deliveryAvailable    Boolean  @default(true)
+  deliveryFee          Float    @default(15.0)
+  deliveryTimeEstimate String   @default("25 - 40 دقيقة")
+  workingHours         String   @default("24 ساعة / خدمة ليلية")
+  isVerified           Boolean  @default(true)
+  subscriptionPlan     String   @default("PRO") // FREE, PRO, ENTERPRISE
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  staff         PharmacyStaff[]
+  inventory     PharmacyInventory[]
+  couriers      Courier[]
+  orders        Order[]
+  prescriptions Prescription[]
+}
+
+// ----------------------------------------------------
+// 2. PHARMACY STAFF & ROLES (فريق عمل الصيدلية)
+// ----------------------------------------------------
+model PharmacyStaff {
+  id         String   @id @default(cuid())
+  pharmacyId String
+  pharmacy   Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  name       String
+  username   String   @unique
+  password   String
+  role       String   @default("pharmacist") // manager, pharmacist, cashier
+  phone      String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+// ----------------------------------------------------
+// 3. COURIER FLEET (طيارين ودليفري الصيدلية)
+// ----------------------------------------------------
+model Courier {
+  id          String   @id @default(cuid())
+  pharmacyId  String
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  name        String
+  phone       String
+  vehicleType String   @default("motorcycle") // motorcycle, bike, car
+  isAvailable Boolean  @default(true)
+  currentLat  Float?
+  currentLng  Float?
+  totalOrders Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  orders Order[]
+}
+
+// ----------------------------------------------------
+// 4. CUSTOMER / PATIENT (العملاء والمرضى)
+// ----------------------------------------------------
+model Customer {
+  id              String   @id @default(cuid())
+  name            String
+  phone           String
+  city            String?
+  address         String?
+  lat             Float?
+  lng             Float?
+  allergies       String? // الحساسية الدوائية (بنسلين، سلفا، إلخ)
+  chronicDiseases String? // أمراض مزمنة (ضغط، سكر، غدة...)
+  totalOrders     Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  orders           Order[]
+  prescriptions    Prescription[]
+  labReports       LabReport[]
+  shortageRequests ShortageRequest[]
+}
+
+// ----------------------------------------------------
+// 5. MASTER EGYPTIAN DRUG CATALOG (دليل الدواء المصري الشامل)
+// ----------------------------------------------------
+model Medicine {
+  id                   String   @id @default(cuid())
+  tradeNameAr          String // الاسم التجاري بالعربي (مثلاً: أوجمنتين 1 جم)
+  tradeNameEn          String // Trade Name (e.g. Augmentin 1g)
+  genericName          String // المادة الفعالة (Amoxicillin + Clavulanic Acid)
+  strength             String? // التركيز (1000 mg, 500 mg)
+  dosageForm           String // الشكل الدوائي (أقراص، شراب، حقن، فوار، كريم)
+  category             String // التصنيف الطبي (مضاد حيوي، مسكن، أدوية ضغط، سكر، تجميل)
+  officialPrice        Float // السعر الجبري المعتمد من هيئة الدواء (ج.م)
+  manufacturer         String? // الشركة المصنعة (GSK, Eva, Amoun, Pfizer...)
+  barcode              String?
+  image                String? // صورة العبوة
+  requiresPrescription Boolean  @default(false) // هل يحتاج روشتة رسمية
+  isShortage           Boolean  @default(false) // يعاني من شح ونواقص في السوق
+  alternatives         String? // أسماء البدائل والمثائل (JSON string or comma-separated)
+  description          String? // دواعي الاستعمال وموانع المحاذير
+  createdAt            DateTime @default(now())
+
+  inventory PharmacyInventory[]
+}
+
+// ----------------------------------------------------
+// 6. PHARMACY INVENTORY (مخزون كل صيدلية)
+// ----------------------------------------------------
+model PharmacyInventory {
+  id            String   @id @default(cuid())
+  pharmacyId    String
+  pharmacy      Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  medicineId    String
+  medicine      Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  stockQuantity Int      @default(0)
+  price         Float // السعر المعروض
+  isAvailable   Boolean  @default(true)
+  expiryDate    String? // تاريخ الصلاحية
+  updatedAt     DateTime @updatedAt
+
+  @@unique([pharmacyId, medicineId])
+}
+
+// ----------------------------------------------------
+// 7. AI PRESCRIPTION SCAN (قراءة وفحص الروشتات بـ Gemini Multimodal)
+// ----------------------------------------------------
+model Prescription {
+  id              String    @id @default(cuid())
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  pharmacyId      String?
+  pharmacy        Pharmacy? @relation(fields: [pharmacyId], references: [id])
+  imageUrl        String // صورة الروشتة المرفوعة
+  rawOcrText      String? // النص المستخرج بالكامل
+  parsedMedicines String // JSON: [{ tradeName, dosage, frequency, duration, isAvailable, alternative }]
+  doctorSpecialty String? // تخصص الطبيب (باطنة، عظام، أطفال...)
+  aiConfidence    Float     @default(0.95)
+  status          String    @default("SCANNED") // SCANNED, REVIEWED, QUOTED, ORDERED
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  orders Order[]
+}
+
+// ----------------------------------------------------
+// 8. AI LAB REPORT INTERPRETER (تفسير وترجمة التحاليل الطبية)
+// ----------------------------------------------------
+model LabReport {
+  id                    String    @id @default(cuid())
+  customerId            String?
+  customer              Customer? @relation(fields: [customerId], references: [id])
+  imageUrl              String // صورة نتيجة التحليل
+  testType              String    @default("CBC") // CBC, LIPID, LIVER, KIDNEY, HBA1C, GENERAL
+  rawOcrText            String?
+  simplifiedAnalysisAr  String // الشرح الطبي الواضح والمبسط بالعربي للمريض
+  abnormalValues        String // JSON: [{ parameter, value, referenceRange, status: "HIGH"|"LOW"|"NORMAL" }]
+  doctorAdviceQuestions String? // JSON: أسئلة مقترحة يسألها المريض لطبيبه
+  suggestedVitamins     String? // JSON: مكملات وفيتامينات مصرح بها
+  createdAt             DateTime  @default(now())
+}
+
+// ----------------------------------------------------
+// 9. SHORTAGE RADAR MESH (رادار نواقص الأدوية على مستوى الجمهورية)
+// ----------------------------------------------------
+model ShortageRequest {
+  id                String    @id @default(cuid())
+  customerId        String?
+  customer          Customer? @relation(fields: [customerId], references: [id])
+  medicineName      String // اسم الدواء الناقص
+  genericName       String? // المادة الفعالة
+  customerCity      String // مدينة العميل
+  governorate       String // محافظة العميل
+  quantityNeeded    Int       @default(1)
+  urgency           String    @default("HIGH") // NORMAL, HIGH, CRITICAL
+  status            String    @default("SEARCHING") // SEARCHING, FOUND, RESERVED, COMPLETED
+  foundPharmacyId   String? // كود الصيدلية التي لبت الطلب
+  reservationExpiry DateTime? // مهلة حجز العلبة للعميل (مثلاً 3 ساعات)
+  notes             String?
+  createdAt         DateTime  @default(now())
+
+  orders Order[]
+}
+
+// ----------------------------------------------------
+// 10. ORDERS & DELIVERY (إدارة الطلبات والتوصيل)
+// ----------------------------------------------------
+model Order {
+  id                String           @id @default(cuid())
+  orderNumber       String           @unique // e.g. DWK-8542
+  pharmacyId        String
+  pharmacy          Pharmacy         @relation(fields: [pharmacyId], references: [id])
+  customerId        String?
+  customer          Customer?        @relation(fields: [customerId], references: [id])
+  customerName      String
+  customerPhone     String
+  customerAddress   String
+  orderType         String           @default("DIRECT") // DIRECT, PRESCRIPTION, SHORTAGE_RADAR, COSMETICS
+  items             String // JSON: [{ medicineId, name, qty, price, total }]
+  subtotal          Float            @default(0)
+  deliveryFee       Float            @default(15)
+  totalAmount       Float            @default(0)
+  paymentMethod     String           @default("COD") // COD, VODAFONE_CASH, INSTAPAY, CARD
+  status            String           @default("PENDING") // PENDING, PREPARING, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  courierId         String?
+  courier           Courier?         @relation(fields: [courierId], references: [id])
+  prescriptionId    String?
+  prescription      Prescription?    @relation(fields: [prescriptionId], references: [id])
+  shortageRequestId String?
+  shortageRequest   ShortageRequest? @relation(fields: [shortageRequestId], references: [id])
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
