@@ -1,7 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import MobileBottomNav from "../components/MobileBottomNav";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#060b13",
+};
 
 export const metadata: Metadata = {
   title: "دَواك — Dawaak | شبكة الصيدليات الذكية ورادار النواقص بمصر",
@@ -19,6 +29,11 @@ export const metadata: Metadata = {
     "توصيل أدوية",
     "دواك",
   ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "دَواك",
+  },
 };
 
 export default function RootLayout({
@@ -38,8 +53,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col justify-between bg-[#060b13] text-slate-100 antialiased font-sans">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   );

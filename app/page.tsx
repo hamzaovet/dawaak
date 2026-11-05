@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import DoubleQrCard from "../components/DoubleQrCard";
 import {
   Radar,
   Camera,
@@ -498,6 +499,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* 5. DUAL QR CARD (PRINTABLE & PROMOTIONAL) */}
+      <DoubleQrCard />
     </div>
   );
 }
